@@ -36,9 +36,9 @@ describe('doctor', () => {
   it('diagnose',async () => {
     let {doctor, issues} = configure();
     let mockedIssues = _.map(issues, (issue) => { return sandbox.mock(issue); });
-    mockedIssues[0].expects('diagnose').once().returns(false);
-    mockedIssues[1].expects('diagnose').once().returns(true);
-    mockedIssues[2].expects('diagnose').once().returns(true);
+    mockedIssues[0].expects('diagnose').once().returns({exists: false, message: "All Good!"});
+    mockedIssues[1].expects('diagnose').once().returns({exists: true, message: "Oh No!"});
+    mockedIssues[2].expects('diagnose').once().returns({exists: true, message: "Oh No!"});
     await doctor.diagnose();
     for(let mock of mockedIssues) { mock.verify(); }
     doctor.toFix.should.have.length(2);
