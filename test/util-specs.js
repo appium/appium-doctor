@@ -1,13 +1,23 @@
 // transpile:mocha
 
-import { pkgRoot, cp, isMac, fs } from '../lib/utils';
+import { pkgRoot, cp, isMac, fs, macOsxVersion } from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import path from 'path';
+import sinon from 'sinon';
+import B from 'bluebird';
 
 chai.should();
 
 describe('utils', () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it('cp.exec',async () => {
     let [stdout, stderr] = await cp.exec('echo 1');
     stdout.should.equal('1\n');
@@ -26,6 +36,13 @@ describe('utils', () => {
       isMac().should.be.ok;
     });
   });
+
+  it('macOsxVersion', async () => {
+    sandbox.stub(cp, 'exec').returns(B.resolve(['10.10.1\n', '']));
+    let v = await macOsxVersion();
+    v.should.equal('10.10');
+  });
+
   it('fs.readFile', async () => {
     (await fs.readFile(path.resolve(pkgRoot, 'test', 'fixtures',
       'wow.txt'), 'utf8')).should.include('WOW');
