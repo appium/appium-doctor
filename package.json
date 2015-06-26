@@ -41,7 +41,7 @@
     "gulp": "^3.8.11",
     "lodash": "^3.9.3",
     "mochawait": "^2.0.0",
-    "sinon": "^1.15.3",
+    "sinon": "https://github.com/appium/Sinon.JS.git",
     "yargs": "^3.10.0"
   }
 }
