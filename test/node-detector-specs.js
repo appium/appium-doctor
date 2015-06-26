@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import {fs, cp} from '../lib/utils';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
-import _ from 'underscore';
+import _ from 'lodash';
 
 chai.should();
 let expect = chai.expect;

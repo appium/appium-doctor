@@ -25,7 +25,9 @@
   "dependencies": {
     "appium-logger": "^1.1.5",
     "babel-runtime": "=5.5.5",
+    "bluebird": "^2.9.30",
     "colors": "^1.1.2",
+    "lodash": "^3.9.3",
     "source-map-support": "^0.3.1"
   },
   "scripts": {
@@ -35,11 +37,9 @@
   },
   "devDependencies": {
     "appium-gulp-plugins": "^1.2.12",
-    "bluebird": "^2.9.30",
     "chai": "^3.0.0",
     "chai-as-promised": "^5.1.0",
     "gulp": "^3.8.11",
-    "lodash": "^3.9.3",
     "mochawait": "^2.0.0",
     "sinon": "~1.14.1",
     "yargs": "^3.10.0"
