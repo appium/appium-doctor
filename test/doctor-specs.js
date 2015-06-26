@@ -35,7 +35,7 @@ describe('doctor', () => {
 
   it('diagnose',async () => {
     let {doctor, issues} = configure();
-    let mockedIssues = _.map(issues, (issue) => { return sinon.mock(issue); });
+    let mockedIssues = _.map(issues, (issue) => { return sandbox.mock(issue); });
     mockedIssues[0].expects('diagnose').once().returns(false);
     mockedIssues[1].expects('diagnose').once().returns(true);
     mockedIssues[2].expects('diagnose').once().returns(true);
@@ -47,7 +47,7 @@ describe('doctor', () => {
   it('fix', async () => {
     let {doctor, issues} = configure();
     doctor.toFix = [issues[1], issues[2]];
-    let mockedIssues = _.map(issues, (issue) => { return sinon.mock(issue); });
+    let mockedIssues = _.map(issues, (issue) => { return sandbox.mock(issue); });
     mockedIssues[1].expects('fix').once().returns(true);
     mockedIssues[2].expects('fix').once().returns(true);
     await doctor.fix();

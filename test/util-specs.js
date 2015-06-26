@@ -14,11 +14,18 @@ describe('utils', () => {
     stderr.should.equal('');
   });
 
-  // TODO: proper unit test for isMac
-  it('isMac', () => {
-    isMac().should.be.ok;
+  describe('isMac', () => {
+    let originalPlatform;
+    before(() => {
+      originalPlatform = process.platform;
+      Object.defineProperty(process, 'platform', {value: 'darwin'});
+    });
+    after(() => { Object.defineProperty(process, 'platform',
+      {value: originalPlatform}); });
+    it('should detect mac', () => {
+      isMac().should.be.ok;
+    });
   });
-
   it('fs.readFile', async () => {
     (await fs.readFile(path.resolve(pkgRoot, 'test', 'fixtures',
       'wow.txt'), 'utf8')).should.include('WOW');

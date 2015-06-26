@@ -21,7 +21,7 @@ describe('NodeDetector', () => {
   });
 
  it('retrieveInCommonPlaces - success',async () => {
-    let mock = sinon.mock(fs);
+    let mock = sandbox.mock(fs);
     mock.expects('exists').once().returns(B.resolve(true));
     let detector = new NodeDetector();
     (await detector.retrieveInCommonPlaces())
@@ -30,7 +30,7 @@ describe('NodeDetector', () => {
   });
 
  it('retrieveInCommonPlaces - failure',async () => {
-    let mock = sinon.mock(fs);
+    let mock = sandbox.mock(fs);
     mock.expects('exists').twice().returns(B.resolve(false));
     let detector = new NodeDetector();
     expect(await detector.retrieveInCommonPlaces())
@@ -42,8 +42,8 @@ describe('NodeDetector', () => {
  let testRetrieveWithScript = (method) => {
     it(method + ' - success', async () => {
       let mocks = {
-        fs: sinon.mock(fs),
-        cp: sinon.mock(cp),
+        fs: sandbox.mock(fs),
+        cp: sandbox.mock(cp),
       };
       mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
       mocks.fs.expects('exists').once().returns(B.resolve(true));
@@ -56,8 +56,8 @@ describe('NodeDetector', () => {
    it(method + ' - failure', async () => {
       {
         let mocks = {
-          fs: sinon.mock(fs),
-          cp: sinon.mock(cp),
+          fs: sandbox.mock(fs),
+          cp: sandbox.mock(cp),
         };
         mocks.cp.expects('exec').once().returns(B.resolve(['aaa not found\n', '']));
         let detector = new NodeDetector();
@@ -66,8 +66,8 @@ describe('NodeDetector', () => {
       }
       {
         let mocks = {
-          fs: sinon.mock(fs),
-          cp: sinon.mock(cp),
+          fs: sandbox.mock(fs),
+          cp: sandbox.mock(cp),
         };
         mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
         mocks.fs.expects('exists').once().returns(B.resolve(false));
@@ -83,8 +83,8 @@ describe('NodeDetector', () => {
 
   it('retrieveUsingAppiumConfigFile - success', async () => {
     let mocks = {
-      fs: sinon.mock(fs),
-      cp: sinon.mock(cp),
+      fs: sandbox.mock(fs),
+      cp: sandbox.mock(cp),
     };
     mocks.fs.expects('exists').twice().returns(B.resolve(true));
     mocks.fs.expects('readFile').once().returns(
@@ -98,8 +98,8 @@ describe('NodeDetector', () => {
   it('retrieveUsingAppiumConfigFile - failure', async () => {
     {
       let mocks = {
-        fs: sinon.mock(fs),
-        cp: sinon.mock(cp),
+        fs: sandbox.mock(fs),
+        cp: sandbox.mock(cp),
       };
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       mocks.fs.expects('readFile').once().returns(
@@ -111,8 +111,8 @@ describe('NodeDetector', () => {
     }
     {
       let mocks = {
-        fs: sinon.mock(fs),
-        cp: sinon.mock(cp),
+        fs: sandbox.mock(fs),
+        cp: sandbox.mock(cp),
       };
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       mocks.fs.expects('exists').once().returns(B.resolve(false));
@@ -127,10 +127,10 @@ describe('NodeDetector', () => {
 
   it('checkForNodeBinary - success', async () => {
     let detector = new NodeDetector();
-    sinon.stub(detector, 'retrieveInCommonPlaces').returns(null);
-    sinon.stub(detector, 'retrieveUsingWhichCommand').returns(null);
-    sinon.stub(detector, 'retrieveUsingAppleScript').returns('/a/b/c/d');
-    sinon.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
+    sandbox.stub(detector, 'retrieveInCommonPlaces').returns(null);
+    sandbox.stub(detector, 'retrieveUsingWhichCommand').returns(null);
+    sandbox.stub(detector, 'retrieveUsingAppleScript').returns('/a/b/c/d');
+    sandbox.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
     (await detector.detect()).should.equal('/a/b/c/d');
 
     detector.retrieveUsingWhichCommand.called.should.be.ok;
@@ -139,10 +139,10 @@ describe('NodeDetector', () => {
 
   it('checkForNodeBinary - failure', async () => {
     let detector = new NodeDetector();
-    sinon.stub(detector, 'retrieveInCommonPlaces').returns(null);
-    sinon.stub(detector, 'retrieveUsingWhichCommand').returns(null);
-    sinon.stub(detector, 'retrieveUsingAppleScript').returns(null);
-    sinon.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
+    sandbox.stub(detector, 'retrieveInCommonPlaces').returns(null);
+    sandbox.stub(detector, 'retrieveUsingWhichCommand').returns(null);
+    sandbox.stub(detector, 'retrieveUsingAppleScript').returns(null);
+    sandbox.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
     expect(await detector.detect()).to.be.a('null');
 
     detector.retrieveUsingWhichCommand.called.should.be.ok;
