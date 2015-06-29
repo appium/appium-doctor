@@ -2,79 +2,53 @@
 
 import chai from 'chai';
 import 'mochawait';
-import sinon from 'sinon';
 import {fs, cp} from '../lib/utils';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
-import _ from 'lodash';
+import {withMocks, verifyAll, sandbox} from './mock-utils';
 
 chai.should();
 let expect = chai.expect;
 
-describe('NodeDetector', () => {
-  let sandbox;
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-  });
-  afterEach(() => {
-    sandbox.restore();
-  });
+describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
 
  it('retrieveInCommonPlaces - success',async () => {
-    let mock = sandbox.mock(fs);
-    mock.expects('exists').once().returns(B.resolve(true));
+    mocks.fs.expects('exists').once().returns(B.resolve(true));
     let detector = new NodeDetector();
     (await detector.retrieveInCommonPlaces())
       .should.equal('/usr/local/bin/node');
-    mock.verify();
+    verifyAll(mocks);
   });
 
- it('retrieveInCommonPlaces - failure',async () => {
-    let mock = sandbox.mock(fs);
-    mock.expects('exists').twice().returns(B.resolve(false));
+  it('retrieveInCommonPlaces - failure',async () => {
+    mocks.fs.expects('exists').twice().returns(B.resolve(false));
     let detector = new NodeDetector();
-    expect(await detector.retrieveInCommonPlaces())
-      .to.be.a('null');
-    mock.verify();
+    expect(await detector.retrieveInCommonPlaces()).to.be.a('null');
+    verifyAll(mocks);
   });
 
- // retrieveUsingWhichCommand
- let testRetrieveWithScript = (method) => {
+  // retrieveUsingWhichCommand
+  let testRetrieveWithScript = (method) => {
     it(method + ' - success', async () => {
-      let mocks = {
-        fs: sandbox.mock(fs),
-        cp: sandbox.mock(cp),
-      };
       mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       let detector = new NodeDetector();
       (await detector[method]())
         .should.equal('/a/b/c/d');
-      for (let m of _.values(mocks)) { m.verify(); }
+      verifyAll(mocks);
     });
 
-   it(method + ' - failure', async () => {
-      {
-        let mocks = {
-          fs: sandbox.mock(fs),
-          cp: sandbox.mock(cp),
-        };
-        mocks.cp.expects('exec').once().returns(B.resolve(['aaa not found\n', '']));
-        let detector = new NodeDetector();
-        expect(await detector[method]()).to.be.a('null');
-        for (let m of _.values(mocks)) { m.verify(); }
-      }
-      {
-        let mocks = {
-          fs: sandbox.mock(fs),
-          cp: sandbox.mock(cp),
-        };
-        mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
-        mocks.fs.expects('exists').once().returns(B.resolve(false));
-        let detector = new NodeDetector();
-        expect(await detector[method]()).to.be.a('null');
-        for (let m of _.values(mocks)) { m.verify(); }
-      }
+    it(method + ' - failure - path not found ', async () => {
+      mocks.cp.expects('exec').once().returns(B.resolve(['aaa not found\n', '']));
+      let detector = new NodeDetector();
+      expect(await detector[method]()).to.be.a('null');
+      verifyAll(mocks);
+    });
+    it(method + ' - failure - path not exist', async () => {
+      mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
+      mocks.fs.expects('exists').once().returns(B.resolve(false));
+      let detector = new NodeDetector();
+      expect(await detector[method]()).to.be.a('null');
     });
   };
 
@@ -82,72 +56,56 @@ describe('NodeDetector', () => {
   testRetrieveWithScript('retrieveUsingAppleScript');
 
   it('retrieveUsingAppiumConfigFile - success', async () => {
-    let mocks = {
-      fs: sandbox.mock(fs),
-      cp: sandbox.mock(cp),
-    };
     mocks.fs.expects('exists').twice().returns(B.resolve(true));
     mocks.fs.expects('readFile').once().returns(
       B.resolve('{"node_bin": "/a/b/c/d"}'));
     let detector = new NodeDetector();
     (await detector.retrieveUsingAppiumConfigFile())
       .should.equal('/a/b/c/d');
-     for (let m of _.values(mocks)) { m.verify(); }
+    verifyAll(mocks);
   });
 
-  it('retrieveUsingAppiumConfigFile - failure', async () => {
-    {
-      let mocks = {
-        fs: sandbox.mock(fs),
-        cp: sandbox.mock(cp),
-      };
-      mocks.fs.expects('exists').once().returns(B.resolve(true));
-      mocks.fs.expects('readFile').once().returns(
-        B.resolve('{node_bin: "/a/b/c/d"}'));
-      let detector = new NodeDetector();
-      expect(await detector.retrieveUsingAppiumConfigFile())
-        .to.be.a('null');
-      for (let m of _.values(mocks)) { m.verify(); }
-    }
-    {
-      let mocks = {
-        fs: sandbox.mock(fs),
-        cp: sandbox.mock(cp),
-      };
-      mocks.fs.expects('exists').once().returns(B.resolve(true));
-      mocks.fs.expects('exists').once().returns(B.resolve(false));
-      mocks.fs.expects('readFile').once().returns(
-        B.resolve('{"node_bin": "/a/b/c/d"}'));
-      let detector = new NodeDetector();
-      expect(await detector.retrieveUsingAppiumConfigFile())
-        .to.be.a('null');
-      for (let m of _.values(mocks)) { m.verify(); }
-    }
+  it('retrieveUsingAppiumConfigFile - failure - not json', async () => {
+    mocks.fs.expects('exists').once().returns(B.resolve(true));
+    mocks.fs.expects('readFile').once().returns(
+      B.resolve('{node_bin: "/a/b/c/d"}'));
+    let detector = new NodeDetector();
+    expect(await detector.retrieveUsingAppiumConfigFile())
+      .to.be.a('null');
+    verifyAll(mocks);
+  });
+
+  it('retrieveUsingAppiumConfigFile - failure - path does not exist', async () => {
+    mocks.fs.expects('exists').once().returns(B.resolve(true));
+    mocks.fs.expects('exists').once().returns(B.resolve(false));
+    mocks.fs.expects('readFile').once().returns(
+      B.resolve('{"node_bin": "/a/b/c/d"}'));
+    let detector = new NodeDetector();
+    expect(await detector.retrieveUsingAppiumConfigFile())
+      .to.be.a('null');
+    verifyAll(mocks);
   });
 
   it('checkForNodeBinary - success', async () => {
     let detector = new NodeDetector();
-    sandbox.stub(detector, 'retrieveInCommonPlaces').returns(null);
-    sandbox.stub(detector, 'retrieveUsingWhichCommand').returns(null);
-    sandbox.stub(detector, 'retrieveUsingAppleScript').returns('/a/b/c/d');
-    sandbox.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
+    mocks.detector = sandbox(mocks).mock(detector);
+    mocks.detector.expects('retrieveInCommonPlaces').once().returns(null);
+    mocks.detector.expects('retrieveUsingWhichCommand').once().returns(null);
+    mocks.detector.expects('retrieveUsingAppleScript').returns('/a/b/c/d');
+    mocks.detector.expects('retrieveUsingAppiumConfigFile').never();
     (await detector.detect()).should.equal('/a/b/c/d');
-
-    detector.retrieveUsingWhichCommand.called.should.be.ok;
-    detector.retrieveUsingAppiumConfigFile.called.should.not.be.ok;
+    verifyAll(mocks);
   });
 
   it('checkForNodeBinary - failure', async () => {
     let detector = new NodeDetector();
-    sandbox.stub(detector, 'retrieveInCommonPlaces').returns(null);
-    sandbox.stub(detector, 'retrieveUsingWhichCommand').returns(null);
-    sandbox.stub(detector, 'retrieveUsingAppleScript').returns(null);
-    sandbox.stub(detector, 'retrieveUsingAppiumConfigFile').returns(null);
+    mocks.detector = sandbox(mocks).mock(detector);
+    mocks.detector.expects('retrieveInCommonPlaces').once().returns(null);
+    mocks.detector.expects('retrieveUsingWhichCommand').once().returns(null);
+    mocks.detector.expects('retrieveUsingAppleScript').once().returns(null);
+    mocks.detector.expects('retrieveUsingAppiumConfigFile').once().returns(null);
     expect(await detector.detect()).to.be.a('null');
-
-    detector.retrieveUsingWhichCommand.called.should.be.ok;
-    detector.retrieveUsingAppiumConfigFile.called.should.be.ok;
+    verifyAll(mocks);
   });
 
-
-});
+}));

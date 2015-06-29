@@ -4,19 +4,12 @@ import { pkgRoot, cp, isMac, fs, macOsxVersion } from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import path from 'path';
-import sinon from 'sinon';
 import B from 'bluebird';
+import {withMocks, verifyAll} from './mock-utils';
 
 chai.should();
 
 describe('utils', () => {
-  let sandbox;
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-  });
-  afterEach(() => {
-    sandbox.restore();
-  });
 
   it('cp.exec',async () => {
     let [stdout, stderr] = await cp.exec('echo 1');
@@ -37,11 +30,14 @@ describe('utils', () => {
     });
   });
 
-  it('macOsxVersion', async () => {
-    sandbox.stub(cp, 'exec').returns(B.resolve(['10.10.1\n', '']));
-    let v = await macOsxVersion();
-    v.should.equal('10.10');
-  });
+  describe('macOsxVersion', withMocks({cp}, (mocks) => {
+    it('it should return the correct version.', async () => {
+      mocks.cp.expects('exec').once().returns(B.resolve(['10.10.1\n', '']));
+      let v = await macOsxVersion();
+      v.should.equal('10.10');
+      verifyAll(mocks);
+    });
+  }));
 
   it('fs.readFile', async () => {
     (await fs.readFile(path.resolve(pkgRoot, 'test', 'fixtures',
@@ -54,5 +50,4 @@ describe('utils', () => {
     (await fs.exists(path.resolve(pkgRoot, 'test', 'fixtures',
       'notwow.txt'))).should.not.be.ok;
    });
-
 });
