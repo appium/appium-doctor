@@ -5,7 +5,7 @@ import 'mochawait';
 import {fs, cp} from '../lib/utils';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
-import {withMocks, verifyAll, sandbox} from './mock-utils';
+import {withMocks, verifyAll, getSandbox} from './mock-utils';
 
 chai.should();
 let expect = chai.expect;
@@ -88,7 +88,7 @@ describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
 
   it('checkForNodeBinary - success', async () => {
     let detector = new NodeDetector();
-    mocks.detector = sandbox(mocks).mock(detector);
+    mocks.detector = getSandbox(mocks).mock(detector);
     mocks.detector.expects('retrieveInCommonPlaces').once().returns(null);
     mocks.detector.expects('retrieveUsingWhichCommand').once().returns(null);
     mocks.detector.expects('retrieveUsingAppleScript').returns('/a/b/c/d');
@@ -99,7 +99,7 @@ describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
 
   it('checkForNodeBinary - failure', async () => {
     let detector = new NodeDetector();
-    mocks.detector = sandbox(mocks).mock(detector);
+    mocks.detector = getSandbox(mocks).mock(detector);
     mocks.detector.expects('retrieveInCommonPlaces').once().returns(null);
     mocks.detector.expects('retrieveUsingWhichCommand').once().returns(null);
     mocks.detector.expects('retrieveUsingAppleScript').once().returns(null);

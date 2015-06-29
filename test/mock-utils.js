@@ -26,8 +26,8 @@ function verifyAll (mocks) {
     function (m) { m.verify(); } ).value();
 }
 
-function sandbox (mocks) {
+function getSandbox (mocks) {
   return mocks[SANDBOX];
 }
 
-export {withMocks, verifyAll, sandbox};
+export {withMocks, verifyAll, getSandbox};
