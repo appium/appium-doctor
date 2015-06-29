@@ -1,14 +1,8 @@
 // transpile:main
 
-import Doctor from '../lib/doctor.js';
 import yargs from 'yargs';
+import _ from 'lodash';
+import newDoctor from '../lib/factory';
 
-let argv = yargs.argv;
+newDoctor(_.pick(yargs.argv, 'ios', 'android', 'dev')).run();
 
-let opts = {};
-for (let t of ['android', 'ios', 'dev']) {
-  opts[t] = argv[t] ? true : false;
-}
-
-let doctor = new Doctor(opts);
-doctor.runAll();
