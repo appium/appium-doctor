@@ -22,8 +22,7 @@ function withMocks (libs, fn) {
 }
 
 function verifyAll (mocks) {
-  _(mocks).chain().values().flatten().each(
-    function (m) { m.verify(); } ).value();
+  mocks[SANDBOX].verify();
 }
 
 function getSandbox (mocks) {
