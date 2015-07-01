@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // transpile:main
 
 import yargs from 'yargs';

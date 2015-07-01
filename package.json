@@ -18,7 +18,7 @@
     "node"
   ],
   "main": "./build/index.js",
-  "bin": {},
+  "bin": {"appium-doctor": "./appium-doctor.js"},
   "directories": {
     "lib": "lib"
   },
