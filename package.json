@@ -18,7 +18,9 @@
     "node"
   ],
   "main": "./build/index.js",
-  "bin": {"appium-doctor": "./appium-doctor.js"},
+  "bin": {
+    "appium-doctor": "./appium-doctor.js"
+  },
   "directories": {
     "lib": "lib"
   },
@@ -29,6 +31,7 @@
     "bluebird": "^2.9.30",
     "colors": "^1.1.2",
     "lodash": "^3.9.3",
+    "prompt": "^0.2.14",
     "source-map-support": "^0.3.1"
   },
   "scripts": {

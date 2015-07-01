@@ -14,6 +14,9 @@ describe('android', () => {
   describe('EnvVarAndPathCheck', withMocks({fs} ,(mocks) => {
     cloneEnv();
     let check = new EnvVarAndPathCheck('ANDROID_HOME');
+    it('autofix', () => {
+      check.autofix.should.not.be.ok;
+    });
     it('diagnose - success', async () => {
       process.env.ANDROID_HOME = '/a/b/c/d';
       mocks.fs.expects('exists').once().returns(P.resolve(true));
@@ -40,10 +43,17 @@ describe('android', () => {
       });
       verifyAll(mocks);
     });
+    it('fix', async () => {
+      (await check.fix()).should.equal('Manually configure ANDROID_HOME ' +
+        'and run appium-doctor again.');
+    });
   }));
   describe('AndroidToolCheck', withMocks({fs} ,(mocks) => {
     cloneEnv();
     let check = new AndroidToolCheck('adb', 'platform-tools/adb');
+    it('autofix', () => {
+      check.autofix.should.not.be.ok;
+    });
     it('diagnose - success', async () => {
       process.env.ANDROID_HOME = '/a/b/c/d';
       mocks.fs.expects('exists').once().returns(P.resolve(true));
@@ -69,6 +79,15 @@ describe('android', () => {
         message: 'adb could NOT be found at  /a/b/c/d/platform-tools/adb!'
       });
       verifyAll(mocks);
+    });
+    it('fix - ANDROID_HOME', async () => {
+      delete process.env.ANDROID_HOME;
+      (await check.fix()).should.equal('Manually configure ANDROID_HOME ' +
+        'and run appium-doctor again.');
+    });
+    it('fix - install', async () => {
+      (await check.fix()).should.equal('Manually install adb, ' +
+        'add it to PATH and run appium-doctor again.');
     });
   }));
 });

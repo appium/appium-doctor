@@ -24,6 +24,9 @@ describe('ios', () => {
 
   describe('XcodeCheck', withMocks({cp, fs} ,(mocks) => {
     let check = new XcodeCheck();
+    it('autofix', () => {
+      check.autofix.should.be.ok;
+    });
     it('diagnose - success', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d\n', '']));
       mocks.fs.expects('exists').once().returns(P.resolve(true));
@@ -60,6 +63,9 @@ describe('ios', () => {
   }));
   describe('XcodeCmdLineToolsCheck', withMocks({cp, utils} ,(mocks) => {
     let check = new XcodeCmdLineToolsCheck();
+    it('autofix', () => {
+      check.autofix.should.be.ok;
+    });
     it('diagnose - success', async () => {
       mocks.utils.expects('macOsxVersion').once().returns(P.resolve('10.10'));
       mocks.cp.expects('exec').once().returns(P.resolve(['1234 install-time\n', '']));
@@ -95,6 +101,9 @@ describe('ios', () => {
   }));
   describe('DevToolsSecurityCheck', withMocks({cp, utils} ,(mocks) => {
     let check = new DevToolsSecurityCheck();
+    it('autofix', () => {
+      check.autofix.should.be.ok;
+    });
     it('diagnose - success', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(['1234 enabled\n', '']));
       (await check.diagnose()).should.deep.equal({
@@ -127,6 +136,9 @@ describe('ios', () => {
   }));
   describe('AuthorizationDbCheck', withMocks({cp, fs, utils} ,(mocks) => {
     let check = new AuthorizationDbCheck();
+    it('autofix', () => {
+      check.autofix.should.be.ok;
+    });
     it('diagnose - success - 10.10', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(['1234 is-developer\n', '']));
       (await check.diagnose()).should.deep.equal({
@@ -173,6 +185,9 @@ describe('ios', () => {
   }));
   describe('NodeBinaryCheck', withMocks({NodeDetector} ,(mocks) => {
     let check = new NodeBinaryCheck();
+    it('autofix', () => {
+      check.autofix.should.not.be.ok;
+    });
     it('diagnose - success', async () => {
       mocks.NodeDetector.expects('detect').once().returns(P.resolve('/a/b/c/d'));
       (await check.diagnose()).should.deep.equal({
@@ -188,6 +203,10 @@ describe('ios', () => {
         message: 'The Node.js binary was NOT found!'
       });
       verifyAll(mocks);
+    });
+    it('fix', async () => {
+      (await check.fix()).should.equal('Manually setup Node.js ' +
+        'and run appium-doctor again.');
     });
   }));
 });

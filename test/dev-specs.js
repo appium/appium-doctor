@@ -14,6 +14,9 @@ describe('dev', () => {
   describe('BinaryIsInPathCheck', withMocks({cp, fs} ,(mocks) => {
     cloneEnv();
     let check = new BinaryIsInPathCheck('mvn');
+    it('autofix', () => {
+      check.autofix.should.not.be.ok;
+    });
     it('diagnose - success', async () => {
       process.env.PATH = '/a/b/c/d;/e/f/g/h';
       mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d/mvn\n', '']));
@@ -43,10 +46,17 @@ describe('dev', () => {
       });
       verifyAll(mocks);
     });
+    it('fix', async () => {
+      (await check.fix()).should.equal('Manually install the mvn binary, ' +
+        'add it to PATH and run appium-doctor again.');
+    });
   }));
   describe('AndroidSdkExists', withMocks({fs} ,(mocks) => {
     cloneEnv();
     let check = new AndroidSdkExists('android-16');
+    it('autofix', () => {
+      check.autofix.should.not.be.ok;
+    });
     it('diagnose - success', async () => {
       process.env.ANDROID_HOME = '/a/b/c/d';
       mocks.fs.expects('exists').once().returns(P.resolve(true));
@@ -72,6 +82,15 @@ describe('dev', () => {
         message: 'android-16 could NOT be found at /a/b/c/d/platforms/android-16!'
       });
       verifyAll(mocks);
+    });
+    it('fix - ANDROID_HOME', async () => {
+      delete process.env.ANDROID_HOME;
+      (await check.fix()).should.equal('Manually configure ANDROID_HOME ' +
+        'and run appium-doctor again.');
+    });
+    it('fix - install', async () => {
+      (await check.fix()).should.equal('Manually install the android-16 sdk ' +
+        'and run appium-doctor again.');
     });
   }));
 });
