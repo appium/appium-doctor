@@ -7,11 +7,10 @@ import 'mochawait';
 chai.should();
 
 describe('factory', () => {
-  for(let config of ['ios', 'android', 'dev']) {
+  for(let config of [{'ios': true}, {'android': true}, {'dev': true},
+    {}]) {
     it('should work for ' + config, () => {
-      var opts = {};
-      opts[config] = true;
-      let doctor = newDoctor(opts);
+      let doctor = newDoctor(config);
       doctor.should.exists;
       doctor.checks.should.have.length.above(0);
     });
