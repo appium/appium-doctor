@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "appium-logger": "^1.1.5",
+    "appium-support": "^1.1.1",
     "babel-runtime": "=5.5.5",
     "bluebird": "^2.9.30",
     "colors": "^1.1.2",
