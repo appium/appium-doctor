@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { BinaryIsInPathCheck } from '../lib/dev';
+import { BinaryIsInPathCheck, AndroidSdkExists } from '../lib/dev';
 import {cp, fs} from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
@@ -40,6 +40,36 @@ describe('dev', () => {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'mvn is in PATH, but path is NOT valid!'
+      });
+      verifyAll(mocks);
+    });
+  }));
+  describe('AndroidSdkExists', withMocks({fs} ,(mocks) => {
+    cloneEnv();
+    let check = new AndroidSdkExists('android-16');
+    it('diagnose - success', async () => {
+      process.env.ANDROID_HOME = '/a/b/c/d';
+      mocks.fs.expects('exists').once().returns(P.resolve(true));
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        message: 'android-16 was found at /a/b/c/d/platforms/android-16.'
+      });
+      verifyAll(mocks);
+    });
+    it('failure - missing android home', async () => {
+      delete process.env.ANDROID_HOME;
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        message: 'android-16 could not be found because ANDROID_HOME is NOT set!'
+      });
+      verifyAll(mocks);
+    });
+    it('diagnose - failure - invalid path', async () => {
+      process.env.ANDROID_HOME = '/a/b/c/d';
+      mocks.fs.expects('exists').once().returns(P.resolve(false));
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        message: 'android-16 could NOT be found at /a/b/c/d/platforms/android-16!'
       });
       verifyAll(mocks);
     });
