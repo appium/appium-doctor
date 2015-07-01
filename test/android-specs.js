@@ -86,6 +86,7 @@ describe('android', () => {
         'and run appium-doctor again.');
     });
     it('fix - install', async () => {
+      process.env.ANDROID_HOME = '/a/b/c/d';
       (await check.fix()).should.equal('Manually install adb, ' +
         'add it to PATH and run appium-doctor again.');
     });
