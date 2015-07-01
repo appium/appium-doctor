@@ -1,18 +1,16 @@
 // transpile:mocha
 
 import { EnvVarAndPathCheck, AndroidToolCheck } from '../lib/android';
-import {/*cp,*/ fs} from '../lib/utils';
-//import * as utils from '../lib/utils';
+import {fs} from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import { cloneEnv } from './env-utils.js';
-//import B from 'bluebird';
 import {withMocks, verifyAll} from './mock-utils';
 
 chai.should();
 let P = Promise;
 
-describe('ios', () => {
+describe('android', () => {
   describe('EnvVarAndPathCheck', withMocks({fs} ,(mocks) => {
     cloneEnv();
     let check = new EnvVarAndPathCheck('ANDROID_HOME');
