@@ -27,7 +27,7 @@
   "dependencies": {
     "appium-logger": "^1.1.5",
     "appium-support": "^1.1.1",
-    "babel-runtime": "=5.5.5",
+    "babel-runtime": "=5.6.15",
     "bluebird": "^2.9.30",
     "colors": "^1.1.2",
     "lodash": "^3.9.3",

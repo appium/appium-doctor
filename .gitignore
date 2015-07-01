@@ -2,3 +2,5 @@ node_modules
 build
 *.log
 working
+.DS_Store
+coverage
