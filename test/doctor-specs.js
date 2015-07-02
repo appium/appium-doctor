@@ -39,4 +39,34 @@ describe('doctor', () => {
     });
   }));
 
+  describe('run',  withMocks({}, (mocks) => {
+    let doctor = new Doctor();
+    it('should report success', async () => {
+      mocks.doctor = getSandbox(mocks).mock(doctor);
+      mocks.doctor.expects('diagnose').once();
+      mocks.doctor.expects('reportSuccess').once().returns(true);
+      mocks.doctor.expects('reportManualFixes').never();
+      mocks.doctor.expects('runAutoFixes').never();
+      await doctor.run();
+      verifyAll(mocks);
+    });
+    it('should report manual fixes', async () => {
+      mocks.doctor = getSandbox(mocks).mock(doctor);
+      mocks.doctor.expects('diagnose').once();
+      mocks.doctor.expects('reportSuccess').once().returns(false);
+      mocks.doctor.expects('reportManualFixes').once().returns(true);
+      mocks.doctor.expects('runAutoFixes').never();
+      await doctor.run();
+      verifyAll(mocks);
+    });
+    it('should run autofixes', async () => {
+      mocks.doctor = getSandbox(mocks).mock(doctor);
+      mocks.doctor.expects('diagnose').once();
+      mocks.doctor.expects('reportSuccess').once().returns(false);
+      mocks.doctor.expects('reportManualFixes').once().returns(false);
+      mocks.doctor.expects('runAutoFixes').once();
+      await doctor.run();
+      verifyAll(mocks);
+    });
+  }));
 });
