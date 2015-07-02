@@ -16,7 +16,7 @@ let P = Promise;
 
 describe('ios', () => {
   describe('authorizeIos', withMocks({cp}, (mocks) => {
-    it('should work',async () => {
+    it('should work', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(["", ""]));
       await authorizeIos();
       verifyAll(mocks);

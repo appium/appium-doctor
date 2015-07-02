@@ -3,7 +3,6 @@
 import { Doctor, DoctorCheck } from '../lib/doctor';
 import chai from 'chai';
 import 'mochawait';
-import _ from 'lodash';
 import { withMocks, verifyAll, getSandbox } from './mock-utils';
 import { newLogStub } from './log-utils.js';
 
@@ -28,10 +27,10 @@ describe('doctor', () => {
   }
 
   describe('diagnose', withMocks({}, (mocks) => {
-    it('should detect all issues',async () => {
+    it('should detect all issues', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       let {doctor, checks} = configure();
-      mocks.checks = _.map(checks, (check) => { return getSandbox(mocks).mock(check); });
+      mocks.checks = checks.map((check) => { return getSandbox(mocks).mock(check); });
       mocks.checks[0].expects('diagnose').once().returns({ok: true, message: "All Good!"});
       mocks.checks[1].expects('diagnose').once().returns({ok: false, message: "Oh No!"});
       mocks.checks[2].expects('diagnose').once().returns({ok: false, message: "Oh No!"});

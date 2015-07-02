@@ -11,7 +11,7 @@ chai.should();
 
 describe('utils', () => {
 
-  it('cp.exec',async () => {
+  it('cp.exec', async () => {
     let [stdout, stderr] = await cp.exec('echo 1');
     stdout.should.equal('1\n');
     stderr.should.equal('');

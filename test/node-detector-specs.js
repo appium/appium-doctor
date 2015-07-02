@@ -12,14 +12,14 @@ let expect = chai.expect;
 
 describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
 
- it('retrieveInCommonPlaces - success',async () => {
+ it('retrieveInCommonPlaces - success', async () => {
     mocks.fs.expects('exists').once().returns(B.resolve(true));
     (await NodeDetector.retrieveInCommonPlaces())
       .should.equal('/usr/local/bin/node');
     verifyAll(mocks);
   });
 
-  it('retrieveInCommonPlaces - failure',async () => {
+  it('retrieveInCommonPlaces - failure', async () => {
     mocks.fs.expects('exists').twice().returns(B.resolve(false));
     expect(await NodeDetector.retrieveInCommonPlaces()).to.be.a('null');
     verifyAll(mocks);
