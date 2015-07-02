@@ -39,15 +39,4 @@ describe('doctor', () => {
     });
   }));
 
-  describe('fixAll', withMocks({}, (mocks) => {
-    it('should fix all issues',async () => {
-      let {doctor, checks} = configure();
-      doctor.toFix = [checks[1], checks[2]];
-      mocks.checks = _.map(checks, (check) => { return getSandbox(mocks).mock(check); });
-      mocks.checks[1].expects('fix').once().returns(true);
-      mocks.checks[2].expects('fix').once().returns(true);
-      await doctor.fixAll();
-      verifyAll(mocks);
-    });
-  }));
 });

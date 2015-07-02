@@ -4,6 +4,7 @@ import {authorizeIos, XcodeCheck, XcodeCmdLineToolsCheck,
   DevToolsSecurityCheck, AuthorizationDbCheck, NodeBinaryCheck } from '../lib/ios';
 import {cp, fs} from '../lib/utils';
 import * as utils from '../lib/utils';
+import * as prompter from '../lib/prompt';
 import NodeDetector from '../lib/node-detector';
 import chai from 'chai';
 import 'mochawait';
@@ -22,7 +23,7 @@ describe('ios', () => {
     });
   }));
 
-  describe('XcodeCheck', withMocks({cp, fs} ,(mocks) => {
+  describe('XcodeCheck', withMocks({cp, fs, prompter} ,(mocks) => {
     let check = new XcodeCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
@@ -55,8 +56,8 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      mocks.cp.expects('exec').once().returns(
-        P.resolve(['', '']));
+      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.prompter.expects('doIt').once().returns(P.resolve('yes'));
       await check.fix();
       verifyAll(mocks);
     });

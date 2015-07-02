@@ -30,8 +30,8 @@
     "babel-runtime": "=5.6.15",
     "bluebird": "^2.9.30",
     "colors": "^1.1.2",
+    "inquirer": "^0.8.5",
     "lodash": "^3.9.3",
-    "prompt": "^0.2.14",
     "source-map-support": "^0.3.1"
   },
   "scripts": {
