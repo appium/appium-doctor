@@ -2,10 +2,10 @@
 
 import chai from 'chai';
 import 'mochawait';
-import {fs, cp} from '../lib/utils';
+import { fs, cp } from '../lib/utils';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
-import {withMocks, verifyAll, getSandbox} from './mock-utils';
+import { withMocks, verifyAll, getSandbox } from './mock-utils';
 
 chai.should();
 let expect = chai.expect;

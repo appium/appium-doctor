@@ -1,11 +1,11 @@
 // transpile:mocha
 
 import { BinaryIsInPathCheck, AndroidSdkExists } from '../lib/dev';
-import {cp, fs} from '../lib/utils';
+import { cp, fs } from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import { cloneEnv } from './env-utils.js';
-import {withMocks, verifyAll} from './mock-utils';
+import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
 let P = Promise;

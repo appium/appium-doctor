@@ -1,15 +1,15 @@
 // transpile:mocha
 
-import {authorizeIos, XcodeCheck, XcodeCmdLineToolsCheck,
+import { authorizeIos, XcodeCheck, XcodeCmdLineToolsCheck,
   DevToolsSecurityCheck, AuthorizationDbCheck, NodeBinaryCheck } from '../lib/ios';
-import {cp, fs} from '../lib/utils';
+import { cp, fs } from '../lib/utils';
 import * as utils from '../lib/utils';
 import * as prompter from '../lib/prompt';
 import NodeDetector from '../lib/node-detector';
 import chai from 'chai';
 import 'mochawait';
 import B from 'bluebird';
-import {withMocks, verifyAll} from './mock-utils';
+import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
 let P = Promise;

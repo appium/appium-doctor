@@ -1,11 +1,11 @@
 // transpile:mocha
 
 import { EnvVarAndPathCheck, AndroidToolCheck } from '../lib/android';
-import {fs} from '../lib/utils';
+import { fs } from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import { cloneEnv } from './env-utils.js';
-import {withMocks, verifyAll} from './mock-utils';
+import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
 let P = Promise;

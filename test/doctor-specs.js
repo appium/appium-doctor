@@ -1,11 +1,11 @@
 // transpile:mocha
 
-import {Doctor, DoctorCheck} from '../lib/doctor';
+import { Doctor, DoctorCheck } from '../lib/doctor';
 import chai from 'chai';
 import 'mochawait';
 import _ from 'lodash';
-import {withMocks, verifyAll, getSandbox} from './mock-utils';
-import {newLogStub} from './log-utils.js';
+import { withMocks, verifyAll, getSandbox } from './mock-utils';
+import { newLogStub } from './log-utils.js';
 
 chai.should();
 

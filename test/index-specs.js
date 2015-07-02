@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import {newDoctor, Doctor, DoctorCheck} from '../index';
+import { newDoctor, Doctor, DoctorCheck } from '../index';
 import chai from 'chai';
 import 'mochawait';
 

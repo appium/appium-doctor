@@ -5,7 +5,7 @@ import chai from 'chai';
 import 'mochawait';
 import path from 'path';
 import B from 'bluebird';
-import {withMocks, verifyAll} from './mock-utils';
+import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
 
