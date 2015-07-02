@@ -5,6 +5,7 @@ import chai from 'chai';
 import 'mochawait';
 import _ from 'lodash';
 import {withMocks, verifyAll, getSandbox} from './mock-utils';
+import {newLogStub} from './log-utils.js';
 
 chai.should();
 
@@ -28,6 +29,7 @@ describe('doctor', () => {
 
   describe('diagnose', withMocks({}, (mocks) => {
     it('should detect all issues',async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       let {doctor, checks} = configure();
       mocks.checks = _.map(checks, (check) => { return getSandbox(mocks).mock(check); });
       mocks.checks[0].expects('diagnose').once().returns({ok: true, message: "All Good!"});
@@ -36,6 +38,14 @@ describe('doctor', () => {
       await doctor.diagnose();
       verifyAll(mocks);
       doctor.toFix.should.have.length(2);
+      logStub.output.should.equal([
+        'info: ### Diagnostic starting ###',
+        'info: ✔ All Good!',
+        'warn: ✖ Oh No!',
+        'warn: ✖ Oh No!',
+        'info: ### Diagnostic completed, 2 fixes needed. ###',
+        ''
+      ].join('\n'));
     });
   }));
 
