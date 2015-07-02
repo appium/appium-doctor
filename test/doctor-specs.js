@@ -44,7 +44,7 @@ describe('doctor', () => {
         'warn: ✖ Oh No!',
         'warn: ✖ Oh No!',
         'info: ### Diagnostic completed, 2 fixes needed. ###',
-        ''
+        'info: '
       ].join('\n'));
     });
   }));
@@ -55,7 +55,10 @@ describe('doctor', () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       doctor.toFix = [];
       doctor.reportSuccess().should.equal(true);
-      logStub.output.should.equal('info: Everything looks good, bye!\n');
+      logStub.output.should.equal([
+        'info: Everything looks good, bye!',
+        'info: '
+      ].join('\n'));
     });
 
     it('should return false when fixes are needed', () => {
