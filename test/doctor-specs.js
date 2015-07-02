@@ -7,6 +7,7 @@ import { withMocks, verifyAll, getSandbox } from './mock-utils';
 import { newLogStub } from './log-utils.js';
 
 chai.should();
+let P = Promise;
 
 describe('doctor', () => {
 
@@ -60,6 +61,45 @@ describe('doctor', () => {
     it('should return false when fixes are needed', () => {
       doctor.toFix = [{}];
       doctor.reportSuccess().should.equal(false);
+    });
+  }));
+
+  describe('reportManualFixes', withMocks({},(mocks) => {
+    let doctor = new Doctor();
+    it('should ask for manual fixes to be applied', async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
+      doctor.toFix = [
+        {error: 'Oh no this need to be manually fixed.', check: new DoctorCheck()},
+        {error: 'Oh no this is an autofix.', check: new DoctorCheck({autofix: true})},
+        {error: 'Oh no this also need to be manually fixed.', check: new DoctorCheck()},
+        {error: 'Oh no this also need to be manually fixed.', check: new DoctorCheck()},
+      ];
+      for(let i=0; i<doctor.toFix.length; i++) {
+        let m = getSandbox(mocks).mock(doctor.toFix[i].check);
+        if(doctor.toFix[i].check.autofix) {
+          m.expects('fix').never();
+        } else {
+          m.expects('fix').once().returns(P.resolve(`Manual fix for ${i} is do something.`));
+       }
+      }
+      (await doctor.reportManualFixes()).should.equal(true);
+      verifyAll(mocks);
+      logStub.output.should.equal([
+        'info: ### Manual Fixes Needed ###',
+        'info: The configuration cannot be automatically fixed, please do the following first:',
+        'warn: - Manual fix for 0 is do something.',
+        'warn: - Manual fix for 2 is do something.',
+        'warn: - Manual fix for 3 is do something.',
+        'info: ###',
+        'info: ',
+        'info: Bye, run appium-doctor again when the all the manual fixes have been applied!',
+        'info: '
+      ].join('\n'));
+    });
+
+    it('should return false when there is no manual fix', async () => {
+      doctor.toFix = [{error: 'Oh no!', check: new DoctorCheck({autofix: true}) }];
+      (await doctor.reportManualFixes()).should.equal(false);
     });
   }));
 
