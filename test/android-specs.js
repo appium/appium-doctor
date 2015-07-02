@@ -59,7 +59,7 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'adb exists at  /a/b/c/d/platform-tools/adb.'
+        message: 'adb exists at /a/b/c/d/platform-tools/adb.'
       });
       verifyAll(mocks);
     });
@@ -76,7 +76,7 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'adb could NOT be found at  /a/b/c/d/platform-tools/adb!'
+        message: 'adb could NOT be found at /a/b/c/d/platform-tools/adb!'
       });
       verifyAll(mocks);
     });
