@@ -237,16 +237,13 @@ describe('doctor', () => {
   describe('run',  withMocks({}, (mocks) => {
     let doctor = new Doctor();
     it('should report success', async () => {
-      let sandbox = getSandbox(mocks);
-      sandbox.stub(doctor, 'diagnose');
-      sandbox.stub(doctor, 'reportSuccess').returns(true);
-      sandbox.stub(doctor, 'reportManualFixes');
-      sandbox.stub(doctor, 'runAutoFixes');
+      mocks.doctor = getSandbox(mocks).mock(doctor);
+      mocks.doctor.expects('diagnose').once();
+      mocks.doctor.expects('reportSuccess').once().returns(true);
+      mocks.doctor.expects('reportManualFixes').never();
+      mocks.doctor.expects('runAutoFixes').never();
       await doctor.run();
-      doctor.diagnose.calledOnce.should.be.ok;
-      doctor.reportSuccess.calledOnce.should.be.ok;
-      doctor.reportManualFixes.called.should.not.be.ok;
-      doctor.runAutoFixes.called.should.not.be.ok;
+      verifyAll(mocks);
     });
     it('should report manual fixes', async () => {
       mocks.doctor = getSandbox(mocks).mock(doctor);
