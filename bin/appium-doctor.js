@@ -7,6 +7,10 @@ import log from '../lib/logger';
 
 let argv = yargs.argv;
 
+// configuring log
+log.unwrap().log = (level, prefix, message) => {
+  console.log(message);
+};
 log.level = argv.debug ? 'debug' : 'info';
 
-newDoctor(_.pick(argv, 'ios', 'android', 'dev')).run();
+newDoctor(_.pick(argv, 'ios', 'android', 'dev', 'demo')).run();

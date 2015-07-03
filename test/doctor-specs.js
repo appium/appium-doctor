@@ -40,9 +40,9 @@ describe('doctor', () => {
       doctor.toFix.should.have.length(2);
       logStub.output.should.equal([
         'info: ### Diagnostic starting ###',
-        'info: ✔ All Good!',
-        'warn: ✖ Oh No!',
-        'warn: ✖ Oh No!',
+        'info:  ✔ All Good!',
+        'warn:  ✖ Oh No!',
+        'warn:  ✖ Oh No!',
         'info: ### Diagnostic completed, 2 fixes needed. ###',
         'info: '
       ].join('\n'));

@@ -57,7 +57,7 @@ describe('ios', () => {
     });
     it('fix', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
-      mocks.prompter.expects('doIt').once().returns(P.resolve('yes'));
+      mocks.prompter.expects('fixIt').once().returns(P.resolve('yes'));
       await check.fix();
       verifyAll(mocks);
     });
