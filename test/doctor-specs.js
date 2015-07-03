@@ -236,6 +236,13 @@ describe('doctor', () => {
 
   describe('run',  withMocks({}, (mocks) => {
     let doctor = new Doctor();
+    it('should work', async () => {
+      try {
+        let doctor = new Doctor();
+        await doctor.run();
+      } catch(err) {
+      }
+    });
     it('should report success', async () => {
       mocks.doctor = getSandbox(mocks).mock(doctor);
       mocks.doctor.expects('diagnose').once();
