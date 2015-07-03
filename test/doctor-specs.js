@@ -52,19 +52,19 @@ describe('doctor', () => {
 
   describe('reportSuccess', withMocks({},(mocks) => {
     let doctor = new Doctor();
-    it('should report success when no fixes are needed', () => {
+    it('should report success when no fixes are needed', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       doctor.toFix = [];
-      doctor.reportSuccess().should.equal(true);
+      (await doctor.reportSuccess()).should.equal(true);
       logStub.output.should.equal([
         'info: Everything looks good, bye!',
         'info: '
       ].join('\n'));
     });
 
-    it('should return false when fixes are needed', () => {
+    it('should return false when fixes are needed', async () => {
       doctor.toFix = [{}];
-      doctor.reportSuccess().should.equal(false);
+      (await doctor.reportSuccess()).should.equal(false);
     });
   }));
 
