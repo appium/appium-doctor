@@ -4,7 +4,7 @@ import chai from 'chai';
 import 'mochawait';
 import '../lib/prompt';
 //import B from 'bluebird';
-//import {withMocks, verifyAll} from './mock-utils';
+//import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
 

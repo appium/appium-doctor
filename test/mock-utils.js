@@ -29,4 +29,4 @@ function getSandbox (mocks) {
   return mocks[SANDBOX];
 }
 
-export {withMocks, verifyAll, getSandbox};
+export { withMocks, verifyAll, getSandbox };

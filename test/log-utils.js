@@ -30,4 +30,4 @@ function newLogStub(sandbox, opts={}) {
   return logStub;
 }
 
-export {newLogStub};
+export { newLogStub };
