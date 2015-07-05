@@ -22,7 +22,7 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'ANDROID_HOME is set to /a/b/c/d.'
+        message: 'ANDROID_HOME is set to: /a/b/c/d'
       });
       verifyAll(mocks);
     });
@@ -39,7 +39,8 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'ANDROID_HOME is set to /a/b/c/d but the path is NOT valid!'
+        message: 'ANDROID_HOME is set to \'/a/b/c/d\' ' +
+          'but this is NOT a valid path!'
       });
       verifyAll(mocks);
     });
@@ -58,7 +59,7 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'adb exists at /a/b/c/d/platform-tools/adb.'
+        message: 'adb exists at: /a/b/c/d/platform-tools/adb'
       });
       verifyAll(mocks);
     });
@@ -75,7 +76,7 @@ describe('android', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'adb could NOT be found at /a/b/c/d/platform-tools/adb!'
+        message: 'adb could NOT be found at \'/a/b/c/d/platform-tools/adb\'!'
       });
       verifyAll(mocks);
     });

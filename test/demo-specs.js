@@ -24,14 +24,14 @@ describe('demo', () => {
       mocks.fs.expects('lstat').once().returns(
         P.resolve({isDirectory: () => { return true; }}));
       (await check.diagnose()).should.deep.equal(
-        { ok: true, message: 'Found directory at /a/b/c/d.' });
+        { ok: true, message: 'Found directory at: /a/b/c/d' });
       verifyAll(mocks);
     });
 
     it('failure - not there', async () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal(
-        { ok: false, message: 'Could NOT find directory at /a/b/c/d!' });
+        { ok: false, message: 'Could NOT find directory at \'/a/b/c/d\'!' });
       verifyAll(mocks);
     });
 
@@ -40,12 +40,12 @@ describe('demo', () => {
       mocks.fs.expects('lstat').once().returns(
         P.resolve({isDirectory: () => { return false; }}));
       (await check.diagnose()).should.deep.equal(
-        { ok: false, message: '/a/b/c/d is NOT a directory!' });
+        { ok: false, message: '\'/a/b/c/d\' is NOT a directory!' });
       verifyAll(mocks);
     });
 
     it('fix', async () => {
-      (await check.fix()).should.equal('Manually create a directory at /a/b/c/d.');
+      (await check.fix()).should.equal('Manually create a directory at: /a/b/c/d');
     });
   }));
 
@@ -55,14 +55,14 @@ describe('demo', () => {
     it('diagnose - success', async () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal(
-        { ok: true, message: 'Found file at /a/b/c/d.' });
+        { ok: true, message: 'Found file at: /a/b/c/d' });
       verifyAll(mocks);
     });
 
     it('failure - not there', async () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal(
-        { ok: false, message: 'Could NOT find file at /a/b/c/d!' });
+        { ok: false, message: 'Could NOT find file at \'/a/b/c/d\'!' });
       verifyAll(mocks);
     });
 
@@ -73,10 +73,7 @@ describe('demo', () => {
         P.resolve({stdout: '', stderr: ''}));
       (await check.fix());
       verifyAll(mocks);
-      logStub.output.should.equal([
-        'info: The following command need be executed:',
-        'info:  - touch \'/a/b/c/d\''
-      ].join('\n'));
+      logStub.output.should.equal('info: The following command need be executed: touch \'/a/b/c/d\'');
     });
 
     it('fix - no', async () => {
@@ -86,9 +83,8 @@ describe('demo', () => {
       await check.fix().should.be.rejectedWith(FixSkippedError);
       verifyAll(mocks);
       logStub.output.should.equal([
-        'info: The following command need be executed:',
-        'info:  - touch \'/a/b/c/d\'',
-        'info: Skipping you will need to touch /a/b/c/d manually.'
+        'info: The following command need be executed: touch \'/a/b/c/d\'',
+        'info: Skipping you will need to touch \'/a/b/c/d\' manually.'
       ].join('\n'));
     });
   }));

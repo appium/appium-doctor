@@ -46,7 +46,8 @@ describe('dev', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'mvn is in PATH, but path is NOT valid!'
+        message: 'mvn was found in PATH at \'/a/b/c/d/mvn\', ' +
+          'but this is NOT a valid path!'
       });
       verifyAll(mocks);
     });
@@ -65,7 +66,7 @@ describe('dev', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'android-16 was found at /a/b/c/d/platforms/android-16.'
+        message: 'android-16 was found at: /a/b/c/d/platforms/android-16'
       });
       verifyAll(mocks);
     });
@@ -82,7 +83,7 @@ describe('dev', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'android-16 could NOT be found at /a/b/c/d/platforms/android-16!'
+        message: 'android-16 could NOT be found at \'/a/b/c/d/platforms/android-16\'!'
       });
       verifyAll(mocks);
     });

@@ -31,7 +31,7 @@ describe('ios', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'Xcode is installed at /a/b/c/d.'
+        message: 'Xcode is installed at: /a/b/c/d'
       });
       verifyAll(mocks);
     });
@@ -49,7 +49,7 @@ describe('ios', () => {
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'Xcode cannot be found at /a/b/c/d!'
+        message: 'Xcode cannot be found at \'/a/b/c/d\'!'
       });
       verifyAll(mocks);
     });
@@ -99,7 +99,7 @@ describe('ios', () => {
       await check.fix();
       verifyAll(mocks);
       logStub.output.should.equal([
-        'info: The following command need be executed: \'xcode-select --install\'.',
+        'info: The following command need be executed: xcode-select --install',
       ].join('\n'));
     });
     it('fix - no', async () => {
@@ -109,7 +109,7 @@ describe('ios', () => {
       await check.fix().should.be.rejectedWith(FixSkippedError);
       verifyAll(mocks);
       logStub.output.should.equal([
-        'info: The following command need be executed: \'xcode-select --install\'.',
+        'info: The following command need be executed: xcode-select --install',
         'info: Skipping you will need to install Xcode manually.'
       ].join('\n'));
     });
@@ -234,7 +234,7 @@ describe('ios', () => {
       mocks.NodeDetector.expects('detect').once().returns(P.resolve('/a/b/c/d'));
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        message: 'The Node.js binary was found at: /a/b/c/d.'
+        message: 'The Node.js binary was found at: /a/b/c/d'
       });
       verifyAll(mocks);
     });
