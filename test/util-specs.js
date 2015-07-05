@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { pkgRoot, isMac, fs, macOsxVersion, authorizeIos } from '../lib/utils';
+import { pkgRoot, fs, macOsxVersion, authorizeIos } from '../lib/utils';
 import * as tp from 'teen_process';
 import chai from 'chai';
 import 'mochawait';
@@ -12,19 +12,6 @@ chai.should();
 let P = Promise;
 
 describe('utils', () => {
-
-  describe('isMac', () => {
-    let originalPlatform;
-    before(() => {
-      originalPlatform = process.platform;
-      Object.defineProperty(process, 'platform', {value: 'darwin'});
-    });
-    after(() => { Object.defineProperty(process, 'platform',
-      {value: originalPlatform}); });
-    it('should detect mac', () => {
-      isMac().should.be.ok;
-    });
-  });
 
   describe('macOsxVersion', withMocks({tp}, (mocks) => {
     it('it should return the correct version.', async () => {
