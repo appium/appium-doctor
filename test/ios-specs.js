@@ -1,32 +1,28 @@
 // transpile:mocha
 
-import { authorizeIos, XcodeCheck, XcodeCmdLineToolsCheck,
-  DevToolsSecurityCheck, AuthorizationDbCheck, NodeBinaryCheck } from '../lib/ios';
+import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
+  AuthorizationDbCheck, NodeBinaryCheck} from '../lib/ios';
 import { cp, fs } from '../lib/utils';
 import * as utils from '../lib/utils';
 import * as prompter from '../lib/prompt';
 import NodeDetector from '../lib/node-detector';
+import FixSkippedError from '../lib/doctor';
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { newLogStub } from './log-utils.js';
 import 'mochawait';
 import B from 'bluebird';
-import { withMocks, verifyAll } from './mock-utils';
+import { withMocks, verifyAll, getSandbox } from './mock-utils';
 
 chai.should();
+chai.use(chaiAsPromised);
 let P = Promise;
 
 describe('ios', () => {
-  describe('authorizeIos', withMocks({cp}, (mocks) => {
-    it('should work', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(["", ""]));
-      await authorizeIos();
-      verifyAll(mocks);
-    });
-  }));
-
-  describe('XcodeCheck', withMocks({cp, fs, prompter} ,(mocks) => {
+  describe('XcodeCheck', withMocks({cp, fs} ,(mocks) => {
     let check = new XcodeCheck();
     it('autofix', () => {
-      check.autofix.should.be.ok;
+      check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async () => {
       mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d\n', '']));
@@ -56,13 +52,10 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
-      mocks.prompter.expects('fixIt').once().returns(P.resolve('yes'));
-      await check.fix();
-      verifyAll(mocks);
+      (await check.fix()).should.equal('Manually install Xcode.');
     });
   }));
-  describe('XcodeCmdLineToolsCheck', withMocks({cp, utils} ,(mocks) => {
+  describe('XcodeCmdLineToolsCheck', withMocks({cp, utils, prompter} ,(mocks) => {
     let check = new XcodeCmdLineToolsCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
@@ -94,13 +87,53 @@ describe('ios', () => {
       });
       verifyAll(mocks);
     });
-    it('fix', async () => {
+    it('fix - yes', async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.prompter.expects('fixIt').once().returns(P.resolve('yes'));
       await check.fix();
       verifyAll(mocks);
+      logStub.output.should.equal([
+        'info: The following command need be executed: \'xcode-select --install\'.',
+      ].join('\n'));
+    });
+    it('fix - no', async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
+      mocks.cp.expects('exec').never();
+      mocks.prompter.expects('fixIt').once().returns(P.resolve('no'));
+      await check.fix().should.be.rejectedWith(FixSkippedError);
+      verifyAll(mocks);
+      logStub.output.should.equal([
+        'info: The following command need be executed: \'xcode-select --install\'.',
+        'info: Skipping you will need to install Xcode manually.'
+      ].join('\n'));
     });
   }));
-  describe('DevToolsSecurityCheck', withMocks({cp, utils} ,(mocks) => {
+
+  describe('authorizeIosFix', withMocks({utils, prompter} ,(mocks) => {
+    it('fix - yes', async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
+      mocks.utils.expects('authorizeIos').once();
+      mocks.prompter.expects('fixIt').once().returns(P.resolve('yes'));
+      await fixes.authorizeIosFix();
+      verifyAll(mocks);
+      logStub.output.should.equal([
+        'info: The authorize iOS script need to be run.',
+      ].join('\n'));
+    });
+    it('fix - no', async () => {
+      let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
+      mocks.utils.expects('authorizeIos').never();
+      mocks.prompter.expects('fixIt').once().returns(P.resolve('no'));
+      await fixes.authorizeIosFix().should.be.rejectedWith(FixSkippedError);
+      verifyAll(mocks);
+      logStub.output.should.equal([
+        'info: The authorize iOS script need to be run.',
+        'info: Skipping you will need to run the authorize iOS manually.'
+      ].join('\n'));
+    });
+  }));
+  describe('DevToolsSecurityCheck', withMocks({fixes, cp} ,(mocks) => {
     let check = new DevToolsSecurityCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
@@ -130,12 +163,12 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.fixes.expects('authorizeIosFix').once();
       await check.fix();
       verifyAll(mocks);
     });
   }));
-  describe('AuthorizationDbCheck', withMocks({cp, fs, utils} ,(mocks) => {
+  describe('AuthorizationDbCheck', withMocks({fixes, cp, fs, utils} ,(mocks) => {
     let check = new AuthorizationDbCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
@@ -179,7 +212,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.fixes.expects('authorizeIosFix').once();
       await check.fix();
       verifyAll(mocks);
     });
@@ -206,8 +239,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      (await check.fix()).should.equal('Manually setup Node.js ' +
-        'and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually setup Node.js.');
     });
   }));
 });

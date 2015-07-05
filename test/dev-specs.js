@@ -47,8 +47,7 @@ describe('dev', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      (await check.fix()).should.equal('Manually install the mvn binary, ' +
-        'add it to PATH and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually install the mvn binary and add it to PATH.');
     });
   }));
   describe('AndroidSdkExists', withMocks({fs} ,(mocks) => {
@@ -85,13 +84,11 @@ describe('dev', () => {
     });
     it('fix - ANDROID_HOME', async () => {
       delete process.env.ANDROID_HOME;
-      (await check.fix()).should.equal('Manually configure ANDROID_HOME ' +
-        'and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually configure ANDROID_HOME.');
     });
     it('fix - install', async () => {
       process.env.ANDROID_HOME = '/a/b/c/d';
-      (await check.fix()).should.equal('Manually install the android-16 sdk ' +
-        'and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually install the android-16 sdk.');
     });
   }));
 });

@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { pkgRoot, cp, isMac, fs, macOsxVersion } from '../lib/utils';
+import { pkgRoot, cp, isMac, fs, macOsxVersion, authorizeIos } from '../lib/utils';
 import chai from 'chai';
 import 'mochawait';
 import path from 'path';
@@ -8,6 +8,7 @@ import B from 'bluebird';
 import { withMocks, verifyAll } from './mock-utils';
 
 chai.should();
+let P = Promise;
 
 describe('utils', () => {
 
@@ -50,4 +51,13 @@ describe('utils', () => {
     (await fs.exists(path.resolve(pkgRoot, 'test', 'fixtures',
       'notwow.txt'))).should.not.be.ok;
    });
+
+   describe('authorizeIos', withMocks({cp}, (mocks) => {
+    it('should work', async () => {
+      mocks.cp.expects('exec').once().returns(P.resolve(["", ""]));
+      await authorizeIos();
+      verifyAll(mocks);
+    });
+  }));
+
 });

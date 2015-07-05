@@ -44,8 +44,7 @@ describe('android', () => {
       verifyAll(mocks);
     });
     it('fix', async () => {
-      (await check.fix()).should.equal('Manually configure ANDROID_HOME ' +
-        'and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually configure ANDROID_HOME.');
     });
   }));
   describe('AndroidToolCheck', withMocks({fs} ,(mocks) => {
@@ -87,8 +86,7 @@ describe('android', () => {
     });
     it('fix - install', async () => {
       process.env.ANDROID_HOME = '/a/b/c/d';
-      (await check.fix()).should.equal('Manually install adb, ' +
-        'add it to PATH and run appium-doctor again.');
+      (await check.fix()).should.equal('Manually install adb and add it to PATH.');
     });
   }));
 });
