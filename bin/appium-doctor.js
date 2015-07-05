@@ -4,6 +4,7 @@ import yargs from 'yargs';
 //import _ from 'lodash';
 import newDoctor from '../lib/factory';
 import { configureBinaryLog } from '../lib/utils';
+import { configure as configurePrompt } from '../lib/prompt';
 
 yargs
   .strict()
@@ -33,5 +34,6 @@ yargs
   });
 let opts = yargs.argv;
 
+configurePrompt(opts);
 configureBinaryLog(opts);
 newDoctor(opts).run();
