@@ -4,7 +4,8 @@ import { DirCheck, FileCheck } from '../lib/demo';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import 'mochawait';
-import { fs, cp } from '../lib/utils';
+import { fs } from '../lib/utils';
+import * as tp from 'teen_process';
 import * as prompt from '../lib/prompt';
 import { FixSkippedError } from '../lib/doctor';
 import { withMocks, verifyAll, getSandbox } from './mock-utils';
@@ -48,7 +49,7 @@ describe('demo', () => {
     });
   }));
 
-  describe('FileCheck', withMocks({fs, cp, prompt}, (mocks) => {
+  describe('FileCheck', withMocks({fs, tp, prompt}, (mocks) => {
     let check = new FileCheck('/a/b/c/d');
 
     it('diagnose - success', async () => {
@@ -68,21 +69,25 @@ describe('demo', () => {
     it('fix - yes', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       mocks.prompt.expects('fixIt').once().returns(P.resolve('yes'));
-      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '', stderr: ''}));
       (await check.fix());
       verifyAll(mocks);
-      logStub.output.should.equal(
-        'info: The following command need be executed: \'touch /a/b/c/d\'.');
+      logStub.output.should.equal([
+        'info: The following command need be executed:',
+        'info:  - touch \'/a/b/c/d\''
+      ].join('\n'));
     });
 
     it('fix - no', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
       mocks.prompt.expects('fixIt').once().returns(P.resolve('no'));
-      mocks.cp.expects('exec').never();
+      mocks.tp.expects('exec').never();
       await check.fix().should.be.rejectedWith(FixSkippedError);
       verifyAll(mocks);
       logStub.output.should.equal([
-        'info: The following command need be executed: \'touch /a/b/c/d\'.',
+        'info: The following command need be executed:',
+        'info:  - touch \'/a/b/c/d\'',
         'info: Skipping you will need to touch /a/b/c/d manually.'
       ].join('\n'));
     });

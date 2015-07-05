@@ -2,7 +2,8 @@
 
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
   AuthorizationDbCheck, NodeBinaryCheck} from '../lib/ios';
-import { cp, fs } from '../lib/utils';
+import { fs } from '../lib/utils';
+import * as tp from 'teen_process';
 import * as utils from '../lib/utils';
 import * as prompter from '../lib/prompt';
 import NodeDetector from '../lib/node-detector';
@@ -19,13 +20,14 @@ chai.use(chaiAsPromised);
 let P = Promise;
 
 describe('ios', () => {
-  describe('XcodeCheck', withMocks({cp, fs} ,(mocks) => {
+  describe('XcodeCheck', withMocks({tp, fs} ,(mocks) => {
     let check = new XcodeCheck();
     it('autofix', () => {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '/a/b/c/d\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
@@ -34,7 +36,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - xcode-select', async () => {
-      mocks.cp.expects('exec').once().returns(P.reject(new Error('Something wrong!')));
+      mocks.tp.expects('exec').once().returns(P.reject(new Error('Something wrong!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'Xcode is NOT installed!'
@@ -42,8 +44,8 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - path not exists', async () => {
-      mocks.cp.expects('exec').once().returns(
-        P.resolve(['/a/b/c/d\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '/a/b/c/d\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
@@ -55,14 +57,15 @@ describe('ios', () => {
       (await check.fix()).should.equal('Manually install Xcode.');
     });
   }));
-  describe('XcodeCmdLineToolsCheck', withMocks({cp, utils, prompter} ,(mocks) => {
+  describe('XcodeCmdLineToolsCheck', withMocks({tp, utils, prompter} ,(mocks) => {
     let check = new XcodeCmdLineToolsCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
     });
     it('diagnose - success', async () => {
       mocks.utils.expects('macOsxVersion').once().returns(P.resolve('10.10'));
-      mocks.cp.expects('exec').once().returns(P.resolve(['1234 install-time\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '1234 install-time\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
         message: 'Xcode Command Line Tools are installed.'
@@ -71,7 +74,7 @@ describe('ios', () => {
     });
     it('diagnose - failure - pkgutil crash', async () => {
       mocks.utils.expects('macOsxVersion').once().returns(B.resolve('10.10'));
-      mocks.cp.expects('exec').once().returns(Promise.reject(new Error('Something wrong!')));
+      mocks.tp.expects('exec').once().returns(Promise.reject(new Error('Something wrong!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'Xcode Command Line Tools are NOT installed!'
@@ -80,7 +83,8 @@ describe('ios', () => {
     });
     it('diagnose - failure - no install time', async () => {
       mocks.utils.expects('macOsxVersion').once().returns(B.resolve('10.10'));
-      mocks.cp.expects('exec').once().returns(P.resolve(['1234 abcd\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '1234 abcd\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'Xcode Command Line Tools are NOT installed!'
@@ -89,7 +93,8 @@ describe('ios', () => {
     });
     it('fix - yes', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
-      mocks.cp.expects('exec').once().returns(P.resolve(['', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '', stderr: ''}));
       mocks.prompter.expects('fixIt').once().returns(P.resolve('yes'));
       await check.fix();
       verifyAll(mocks);
@@ -99,7 +104,7 @@ describe('ios', () => {
     });
     it('fix - no', async () => {
       let logStub = newLogStub(getSandbox(mocks), {stripColors: true});
-      mocks.cp.expects('exec').never();
+      mocks.tp.expects('exec').never();
       mocks.prompter.expects('fixIt').once().returns(P.resolve('no'));
       await check.fix().should.be.rejectedWith(FixSkippedError);
       verifyAll(mocks);
@@ -133,13 +138,14 @@ describe('ios', () => {
       ].join('\n'));
     });
   }));
-  describe('DevToolsSecurityCheck', withMocks({fixes, cp} ,(mocks) => {
+  describe('DevToolsSecurityCheck', withMocks({fixes, tp} ,(mocks) => {
     let check = new DevToolsSecurityCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
     });
     it('diagnose - success', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['1234 enabled\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '1234 enabled\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
         message: 'DevToolsSecurity is enabled.'
@@ -147,7 +153,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - DevToolsSecurity crash', async () => {
-      mocks.cp.expects('exec').once().returns(Promise.reject(new Error('Something wrong!')));
+      mocks.tp.expects('exec').once().returns(Promise.reject(new Error('Something wrong!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'DevToolsSecurity is NOT enabled!'
@@ -155,7 +161,8 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - not enabled', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['1234 abcd\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '1234 abcd\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'DevToolsSecurity is NOT enabled!'
@@ -168,13 +175,14 @@ describe('ios', () => {
       verifyAll(mocks);
     });
   }));
-  describe('AuthorizationDbCheck', withMocks({fixes, cp, fs, utils} ,(mocks) => {
+  describe('AuthorizationDbCheck', withMocks({fixes, tp, fs, utils} ,(mocks) => {
     let check = new AuthorizationDbCheck();
     it('autofix', () => {
       check.autofix.should.be.ok;
     });
     it('diagnose - success - 10.10', async () => {
-      mocks.cp.expects('exec').once().returns(P.resolve(['1234 is-developer\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '1234 is-developer\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
         message: 'The Authorization DB is set up properly.'
@@ -182,7 +190,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - success - 10.8', async () => {
-      mocks.cp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
+      mocks.tp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
       mocks.utils.expects('macOsxVersion').once().returns(P.resolve('10.8'));
       mocks.fs.expects('readFile').once().returns(P.resolve(
         '<key>system.privilege.taskport</key> \n <dict>\n <key>allow-root</key>\n <true/>')); 
@@ -193,7 +201,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - 10.10 - security', async () => {
-      mocks.cp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
+      mocks.tp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
       mocks.utils.expects('macOsxVersion').once().returns(P.resolve('10.10'));
       (await check.diagnose()).should.deep.equal({
         ok: false,
@@ -202,7 +210,7 @@ describe('ios', () => {
       verifyAll(mocks);
     });
     it('diagnose - failure - /etc/authorization', async () => {
-      mocks.cp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
+      mocks.tp.expects('exec').once().returns(P.reject(new Error('Oh No!')));
       mocks.utils.expects('macOsxVersion').once().returns(P.resolve('10.8'));
       mocks.fs.expects('readFile').once().returns(P.resolve(''));
       (await check.diagnose()).should.deep.equal({

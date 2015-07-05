@@ -1,7 +1,8 @@
 // transpile:mocha
 
 import { BinaryIsInPathCheck, AndroidSdkExists } from '../lib/dev';
-import { cp, fs } from '../lib/utils';
+import { fs } from '../lib/utils';
+import * as tp from 'teen_process';
 import chai from 'chai';
 import 'mochawait';
 import { cloneEnv } from './env-utils.js';
@@ -11,7 +12,7 @@ chai.should();
 let P = Promise;
 
 describe('dev', () => {
-  describe('BinaryIsInPathCheck', withMocks({cp, fs} ,(mocks) => {
+  describe('BinaryIsInPathCheck', withMocks({tp, fs} ,(mocks) => {
     cloneEnv();
     let check = new BinaryIsInPathCheck('mvn');
     it('autofix', () => {
@@ -19,7 +20,8 @@ describe('dev', () => {
     });
     it('diagnose - success', async () => {
       process.env.PATH = '/a/b/c/d;/e/f/g/h';
-      mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d/mvn\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '/a/b/c/d/mvn\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(P.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
@@ -29,7 +31,8 @@ describe('dev', () => {
     });
     it('diagnose - failure - not in path ', async () => {
       process.env.PATH = '/a/b/c/d;/e/f/g/h';
-      mocks.cp.expects('exec').once().returns(P.resolve(['mvn not found\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: 'mvn not found\n', stderr:''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
         message: 'mvn is MISSING in PATH!'
@@ -38,7 +41,8 @@ describe('dev', () => {
     });
     it('diagnose - failure - invalid path', async () => {
       process.env.PATH = '/a/b/c/d;/e/f/g/h';
-      mocks.cp.expects('exec').once().returns(P.resolve(['/a/b/c/d/mvn\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        P.resolve({stdout: '/a/b/c/d/mvn\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(P.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,

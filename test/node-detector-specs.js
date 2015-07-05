@@ -2,7 +2,8 @@
 
 import chai from 'chai';
 import 'mochawait';
-import { fs, cp } from '../lib/utils';
+import { fs } from '../lib/utils';
+import * as tp from 'teen_process';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
 import { withMocks, verifyAll, getSandbox } from './mock-utils';
@@ -10,7 +11,7 @@ import { withMocks, verifyAll, getSandbox } from './mock-utils';
 chai.should();
 let expect = chai.expect;
 
-describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
+describe('NodeDetector', withMocks({fs, tp}, (mocks) => {
 
  it('retrieveInCommonPlaces - success', async () => {
     mocks.fs.expects('exists').once().returns(B.resolve(true));
@@ -28,7 +29,8 @@ describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
   // retrieveUsingWhichCommand
   let testRetrieveWithScript = (method) => {
     it(method + ' - success', async () => {
-      mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: '/a/b/c/d\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await NodeDetector[method]())
         .should.equal('/a/b/c/d');
@@ -36,12 +38,14 @@ describe('NodeDetector', withMocks({fs, cp}, (mocks) => {
     });
 
     it(method + ' - failure - path not found ', async () => {
-      mocks.cp.expects('exec').once().returns(B.resolve(['aaa not found\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: 'aaa not found\n', stderr: ''}));
       expect(await NodeDetector[method]()).to.be.a('null');
       verifyAll(mocks);
     });
     it(method + ' - failure - path not exist', async () => {
-      mocks.cp.expects('exec').once().returns(B.resolve(['/a/b/c/d\n', '']));
+      mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: '/a/b/c/d\n', stderr: ''}));
       mocks.fs.expects('exists').once().returns(B.resolve(false));
       expect(await NodeDetector[method]()).to.be.a('null');
     });
