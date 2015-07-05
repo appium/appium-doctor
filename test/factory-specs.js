@@ -7,8 +7,7 @@ import 'mochawait';
 chai.should();
 
 describe('factory', () => {
-  for (let config of [{'ios': true}, {'android': true}, {'dev': true},
-    {}]) {
+  for (let config of [{'ios': true}, {'android': true}, {'dev': true}]) {
     it('should work for ' + config, () => {
       let doctor = newDoctor(config);
       doctor.should.exists;
