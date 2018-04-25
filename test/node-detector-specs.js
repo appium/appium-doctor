@@ -28,7 +28,7 @@ describe('NodeDetector', withMocks({fs, tp}, (mocks, S) => {
   // retrieveUsingSystemCall
   let testRetrieveWithScript = (method) => {
     if (method === 'retrieveUsingAppleScript') {
-      system.isMac = function () true;
+      system.isMac = () => true;
     }
     it(method + ' - success', async function () {
       mocks.tp.expects('exec').once().returns(

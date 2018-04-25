@@ -7,5 +7,4 @@ var gulp = require('gulp'),
 boilerplate({
   build: 'appium-doctor',
   files: DEFAULTS.files.concat('bin/**/*.js'),
-  jscs: false,
 });
