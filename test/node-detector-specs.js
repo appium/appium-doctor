@@ -6,12 +6,13 @@ import * as tp from 'teen_process';
 import NodeDetector from '../lib/node-detector';
 import B from 'bluebird';
 import { withSandbox } from 'appium-test-support';
+import { EOL } from 'os';
 
 
 chai.should();
 let expect = chai.expect;
 
-describe('NodeDetector', withSandbox({mocks: {fs, tp}}, (S) => {
+describe('NodeDetector', withSandbox({mocks: {fs, tp, system}}, (S) => {
   it('retrieveInCommonPlaces - success', async function () {
     S.mocks.fs.expects('exists').once().returns(B.resolve(true));
     (await NodeDetector.retrieveInCommonPlaces())
@@ -32,18 +33,10 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp}}, (S) => {
     }
     it(method + ' - success', async function () {
       S.mocks.tp.expects('exec').once().returns(
-        B.resolve({stdout: '/a/b/c/d\n', stderr: ''}));
+        B.resolve({stdout: `/a/b/c/d${EOL}`, stderr: ''}));
       S.mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await NodeDetector[method]())
         .should.equal('/a/b/c/d');
-      S.verify();
-    });
-    it(method + ' - success - where returns multiple lines ', async function () {
-      S.mocks.tp.expects('exec').once().returns(
-        B.resolve({stdout: '/a/b\n/c/d\n', stderr: ''}));
-      S.mocks.fs.expects('exists').once().returns(B.resolve(true));
-      (await NodeDetector[method]())
-        .should.equal('/a/b');
       S.verify();
     });
     it(method + ' - failure - path not found ', async function () {
@@ -62,6 +55,16 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp}}, (S) => {
 
   testRetrieveWithScript('retrieveUsingSystemCall');
   testRetrieveWithScript('retrieveUsingAppleScript');
+
+  it('testRetrieveWithScript - success - where returns multiple lines ', async function () {
+    S.mocks.system.expects('isWindows').twice().returns(true);
+    S.mocks.tp.expects('exec').once().returns(
+      B.resolve({stdout: `/a/b${EOL}/c/d${EOL}`, stderr: ''}));
+    S.mocks.fs.expects('exists').once().returns(B.resolve(true));
+    (await NodeDetector.retrieveUsingSystemCall())
+      .should.equal('/a/b');
+    S.verify();
+  });
 
   it('retrieveUsingAppiumConfigFile - success', async function () {
     S.mocks.fs.expects('exists').twice().returns(B.resolve(true));
