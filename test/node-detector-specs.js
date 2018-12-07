@@ -38,7 +38,14 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp}}, (S) => {
         .should.equal('/a/b/c/d');
       S.verify();
     });
-
+    it(method + ' - success - where returns multiple lines ', async function () {
+      S.mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: '/a/b\n/c/d\n', stderr: ''}));
+      S.mocks.fs.expects('exists').once().returns(B.resolve(true));
+      (await NodeDetector[method]())
+        .should.equal('/a/b');
+      S.verify();
+    });
     it(method + ' - failure - path not found ', async function () {
       S.mocks.tp.expects('exec').once().returns(
         B.resolve({stdout: 'aaa not found\n', stderr: ''}));
