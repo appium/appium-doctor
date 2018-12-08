@@ -33,10 +33,10 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp, system}}, (S) => {
     }
     it(method + ' - success', async function () {
       S.mocks.tp.expects('exec').once().returns(
-        B.resolve({stdout: `/a/b/c/d${EOL}`, stderr: ''}));
+        B.resolve({stdout: `/a/b/c/d/node${EOL}`, stderr: ''}));
       S.mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await NodeDetector[method]())
-        .should.equal('/a/b/c/d');
+        .should.equal('/a/b/c/d/node');
       S.verify();
     });
     it(method + ' - failure - path not found ', async function () {
@@ -59,10 +59,10 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp, system}}, (S) => {
   it('testRetrieveWithScript - success - where returns multiple lines ', async function () {
     S.mocks.system.expects('isWindows').twice().returns(true);
     S.mocks.tp.expects('exec').once().returns(
-      B.resolve({stdout: `/a/b${EOL}/c/d${EOL}`, stderr: ''}));
+      B.resolve({stdout: `/a/b/node${EOL}/c/d/e/node${EOL}`, stderr: ''}));
     S.mocks.fs.expects('exists').once().returns(B.resolve(true));
     (await NodeDetector.retrieveUsingSystemCall())
-      .should.equal('/a/b');
+      .should.equal('/a/b/node');
     S.verify();
   });
 

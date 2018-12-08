@@ -45,8 +45,7 @@ describe('dev', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        message: 'mvn was found in PATH at \'/a/b/c/d/mvn\', ' +
-          'but this is NOT a valid path!'
+        message: 'mvn is MISSING in PATH!'
       });
       mocks.verify();
     });
