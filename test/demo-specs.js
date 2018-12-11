@@ -25,8 +25,11 @@ describe('demo', function () {
         B.resolve({
           isDirectory () { return true; }
         }));
-      (await check.diagnose()).should.deep.equal(
-        { ok: true, message: 'Found directory at: /a/b/c/d' });
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: false,
+        message: 'Found directory at: /a/b/c/d'
+      });
       mocks.verify();
     });
 
@@ -64,8 +67,11 @@ describe('demo', function () {
 
     it('diagnose - success', async function () {
       S.mocks.fs.expects('exists').once().returns(B.resolve(true));
-      (await check.diagnose()).should.deep.equal(
-        { ok: true, message: 'Found file at: /a/b/c/d' });
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: false,
+        message: 'Found file at: /a/b/c/d'
+      });
       S.verify();
     });
 

@@ -23,6 +23,7 @@ describe('dev', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'mvn was found at /a/b/c/d/mvn'
       });
       mocks.verify();
@@ -65,6 +66,7 @@ describe('dev', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'android-16 was found at: /a/b/c/d/platforms/android-16'
       });
       mocks.verify();

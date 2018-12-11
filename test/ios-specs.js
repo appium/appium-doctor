@@ -30,6 +30,7 @@ describe('ios', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'Xcode is installed at: /a/b/c/d'
       });
       mocks.verify();
@@ -68,6 +69,7 @@ describe('ios', function () {
         B.resolve({stdout: '/Applications/Xcode.app/Contents/Developer\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'Xcode Command Line Tools are installed in: /Applications/Xcode.app/Contents/Developer'
       });
       S.verify();
@@ -147,6 +149,7 @@ describe('ios', function () {
         B.resolve({stdout: '1234 enabled\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'DevToolsSecurity is enabled.'
       });
       mocks.verify();
@@ -186,6 +189,7 @@ describe('ios', function () {
         B.resolve({stdout: '1234 is-developer\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'The Authorization DB is set up properly.'
       });
       mocks.verify();
@@ -214,6 +218,7 @@ describe('ios', function () {
       mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'Carthage was found at: /usr/local/bin/carthage'
       });
       mocks.verify();

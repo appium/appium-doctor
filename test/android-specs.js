@@ -21,6 +21,7 @@ describe('android', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'ANDROID_HOME is set to: /a/b/c/d'
       });
       mocks.verify();
@@ -60,6 +61,7 @@ describe('android', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(true));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'adb exists at: /a/b/c/d/platform-tools/adb'
       });
       mocks.verify();

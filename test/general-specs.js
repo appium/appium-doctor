@@ -22,6 +22,7 @@ describe('general', function () {
       mocks.NodeDetector.expects('detect').once().returns(B.resolve('/a/b/c/d'));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'The Node.js binary was found at: /a/b/c/d'
       });
       mocks.verify();
@@ -50,6 +51,7 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns(B.resolve({stdout: 'v4.5.6', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: true,
+        optional: false,
         message: 'Node version is 4.5.6'
       });
       mocks.verify();
