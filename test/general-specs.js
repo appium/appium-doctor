@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { NodeBinaryCheck, NodeVersionCheck } from '../lib/general';
+import { NodeBinaryCheck, NodeVersionCheck, OptionalOpencv4nodejsCommandCheck } from '../lib/general';
 import * as tp from 'teen_process';
 import NodeDetector from '../lib/node-detector';
 import chai from 'chai';
@@ -78,6 +78,35 @@ describe('general', function () {
     });
     it('fix', async function () {
       (await check.fix()).should.equal('Manually upgrade Node.js.');
+    });
+  }));
+
+  describe('OptionalOpencv4nodejsCommandCheck', withMocks({tp}, (mocks) => {
+    let check = new OptionalOpencv4nodejsCommandCheck();
+    it('autofix', function () {
+      check.autofix.should.not.be.ok;
+    });
+    it('diagnose - success', async function () {
+      mocks.tp.expects('exec').once().returns({stdout: '/path/to/opencv4nodejs', stderr: ''});
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: true,
+        message: 'opencv4nodejs is installed.'
+      });
+      mocks.verify();
+    });
+    it('diagnose - failure', async function () {
+      mocks.tp.expects('exec').once().returns({stdout: 'not found', stderr: ''});
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: true,
+        message: 'opencv4nodejs cannot be found'
+      });
+      mocks.verify();
+    });
+    it('fix', async function () {
+      (await check.fix()).should.
+        equal('Why opencv4nodejs needs and how to install it is: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
     });
   }));
 });
