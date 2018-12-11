@@ -38,6 +38,7 @@ describe('ios', function () {
       mocks.tp.expects('exec').once().returns(B.reject(new Error('Something wrong!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Xcode is NOT installed!'
       });
       mocks.verify();
@@ -48,6 +49,7 @@ describe('ios', function () {
       mocks.fs.expects('exists').once().returns(B.resolve(false));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Xcode cannot be found at \'/a/b/c/d\'!'
       });
       mocks.verify();
@@ -74,6 +76,7 @@ describe('ios', function () {
       S.mocks.tp.expects('exec').once().throws(new Error('Something wrong!'));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Xcode Command Line Tools are NOT installed!'
       });
       S.verify();
@@ -82,6 +85,7 @@ describe('ios', function () {
       S.mocks.tp.expects('exec').once().throws(new Error());
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Xcode Command Line Tools are NOT installed!'
       });
       S.verify();
@@ -151,6 +155,7 @@ describe('ios', function () {
       mocks.tp.expects('exec').once().returns(B.reject(new Error('Something wrong!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'DevToolsSecurity is NOT enabled!'
       });
       mocks.verify();
@@ -160,6 +165,7 @@ describe('ios', function () {
         B.resolve({stdout: '1234 abcd\n', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'DevToolsSecurity is NOT enabled!'
       });
       mocks.verify();
@@ -188,6 +194,7 @@ describe('ios', function () {
       mocks.tp.expects('exec').once().returns(B.reject(new Error('Oh No!')));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'The Authorization DB is NOT set up properly.'
       });
       mocks.verify();
@@ -215,6 +222,7 @@ describe('ios', function () {
       mocks.CarthageDetector.expects('detect').once().returns(B.resolve(null));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Carthage was NOT found!'
       });
       mocks.verify();

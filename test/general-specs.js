@@ -30,6 +30,7 @@ describe('general', function () {
       mocks.NodeDetector.expects('detect').once().returns(B.resolve(null));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'The Node.js binary was NOT found!'
       });
       mocks.verify();
@@ -58,6 +59,7 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns(B.resolve({stdout: 'v0.12.18', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: 'Node version should be at least 4!'
       });
       mocks.verify();
@@ -67,6 +69,7 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns(B.resolve({stdout: 'blahblahblah', stderr: ''}));
       (await check.diagnose()).should.deep.equal({
         ok: false,
+        optional: false,
         message: `Unable to find node version (version = 'blahblahblah')`
       });
       mocks.verify();

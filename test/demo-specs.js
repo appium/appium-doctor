@@ -32,8 +32,11 @@ describe('demo', function () {
 
     it('failure - not there', async function () {
       mocks.fs.expects('exists').once().returns(B.resolve(false));
-      (await check.diagnose()).should.deep.equal(
-        { ok: false, message: 'Could NOT find directory at \'/a/b/c/d\'!' });
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: false,
+        message: 'Could NOT find directory at \'/a/b/c/d\'!'
+      });
       mocks.verify();
     });
 
@@ -43,8 +46,11 @@ describe('demo', function () {
         B.resolve({
           isDirectory () { return false; }
         }));
-      (await check.diagnose()).should.deep.equal(
-        { ok: false, message: '\'/a/b/c/d\' is NOT a directory!' });
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: false,
+        message: '\'/a/b/c/d\' is NOT a directory!'
+      });
       mocks.verify();
     });
 
@@ -65,8 +71,11 @@ describe('demo', function () {
 
     it('failure - not there', async function () {
       S.mocks.fs.expects('exists').once().returns(B.resolve(false));
-      (await check.diagnose()).should.deep.equal(
-        { ok: false, message: 'Could NOT find file at \'/a/b/c/d\'!' });
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: false,
+        message: 'Could NOT find file at \'/a/b/c/d\'!'
+      });
       S.verify();
     });
 
