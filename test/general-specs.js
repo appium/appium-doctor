@@ -100,7 +100,7 @@ describe('general', function () {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'opencv4nodejs cannot be found'
+        message: 'opencv4nodejs cannot be found.'
       });
       mocks.verify();
     });
