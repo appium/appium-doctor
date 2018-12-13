@@ -262,7 +262,7 @@ describe('ios', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Why fbsimctl needs and how to install it is: http://appium.io/docs/en/drivers/ios-xcuitest/');
+      (await check.fix()).should.equal('Why fbsimctl is needed and how to install it is: http://appium.io/docs/en/drivers/ios-xcuitest/');
     });
   }));
 
@@ -291,7 +291,7 @@ describe('ios', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Why fbsimctl needs and how to install it is: http://appium.io/docs/en/drivers/ios-xcuitest/');
+      (await check.fix()).should.equal('Why applesimutils is needed and how to install it is: http://appium.io/docs/en/drivers/ios-xcuitest/');
     });
   }));
 });

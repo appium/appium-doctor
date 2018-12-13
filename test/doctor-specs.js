@@ -127,7 +127,7 @@ describe('doctor', function () {
       S.verify();
       logStub.output.should.equal([
         'info: ### Optional Manual Fixes ###',
-        'info: The configuration can install optionally. Please do the following by manual:',
+        'info: The configuration can install optionally. Please do the following manually:',
         'warn:  ➜ Manual fix for 0 is do something.',
         'warn:  ➜ Manual fix for 1 is do something.',
         'info: ',
@@ -158,7 +158,7 @@ describe('doctor', function () {
         'warn:  ➜ Manual fix for 0 is do something.',
         'info: ',
         'info: ### Optional Manual Fixes ###',
-        'info: The configuration can install optionally. Please do the following by manual:',
+        'info: The configuration can install optionally. Please do the following manually:',
         'warn:  ➜ Manual fix for 0 is do something.',
         'info: ',
         'info: ###',
