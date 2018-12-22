@@ -107,7 +107,7 @@ describe('general', function () {
     });
     it('fix', async function () {
       (await check.fix()).should.
-        equal('Why opencv4nodejs is needed and how to install it is: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
+        equal('Why opencv4nodejs is needed and how to install it: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
     });
   }));
 
@@ -140,7 +140,7 @@ describe('general', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('ffmpeg is needed to record screen features. Please read  https://www.ffmpeg.org/ to install it');
+      (await check.fix()).should.equal('ffmpeg is needed to record screen features. Please read https://www.ffmpeg.org/ to install it');
     });
   }));
 });
