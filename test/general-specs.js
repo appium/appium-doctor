@@ -1,7 +1,8 @@
 // transpile:mocha
 
-import { NodeBinaryCheck, NodeVersionCheck, OptionalOpencv4nodejsCommandCheck } from '../lib/general';
+import { NodeBinaryCheck, NodeVersionCheck, OptionalOpencv4nodejsCommandCheck, OptionalFfmpegCommandCheck } from '../lib/general';
 import * as tp from 'teen_process';
+import * as utils from '../lib/utils';
 import NodeDetector from '../lib/node-detector';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -107,6 +108,34 @@ describe('general', function () {
     it('fix', async function () {
       (await check.fix()).should.
         equal('Why opencv4nodejs is needed and how to install it is: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
+    });
+  }));
+
+  describe('OptionalFfmpegCommandCheck', withMocks({tp, utils}, (mocks) => {
+    let check = new OptionalFfmpegCommandCheck();
+    it('autofix', function () {
+      check.autofix.should.not.be.ok;
+    });
+    it('diagnose - success', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ffmpeg');
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: true,
+        message: 'ffmpeg is installed at: path/to/ffmpeg'
+      });
+      mocks.verify();
+    });
+    it('diagnose - failure', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: true,
+        message: 'ffmpeg cannot be found'
+      });
+      mocks.verify();
+    });
+    it('fix', async function () {
+      (await check.fix()).should.equal('ffmpeg is needed to record screen features. Please read  https://www.ffmpeg.org/ to install it');
     });
   }));
 });
