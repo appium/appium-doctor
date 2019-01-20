@@ -96,6 +96,15 @@ describe('general', function () {
       });
       mocks.verify();
     });
+    it('diagnose - success, but not sure if the library exist, no opencv4nodejs@4.13.0', async function () {
+      mocks.tp.expects('exec').once().returns({stdout: `/path/to/node/node/v11.4.0/opencv4nodejs`, stderr: ''});
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: true,
+        message: 'opencv4nodejs is probably installed at: /path/to/node/node/v11.4.0/opencv4nodejs.'
+      });
+      mocks.verify();
+    });
     it('diagnose - failure', async function () {
       mocks.tp.expects('exec').once().returns({stdout: 'not found', stderr: ''});
       (await check.diagnose()).should.deep.equal({
