@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { NodeBinaryCheck, NodeVersionCheck, PythonVersionCheck,
+import { NodeBinaryCheck, NodeVersionCheck, OptionalPythonVersionCheck,
          OptionalOpencv4nodejsCommandCheck, OptionalFfmpegCommandCheck } from '../lib/general';
 import * as tp from 'teen_process';
 import * as utils from '../lib/utils';
@@ -154,8 +154,8 @@ describe('general', function () {
     });
   }));
 
-  describe('PythonVersionCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new PythonVersionCheck();
+  describe('OptionalPythonVersionCheck', withMocks({tp, utils}, (mocks) => {
+    let check = new OptionalPythonVersionCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
@@ -164,8 +164,8 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns({stdout: '', stderr: 'Python 2.7.15'});
       (await check.diagnose()).should.deep.equal({
         ok: true,
-        optional: false,
-        message: 'Python required by node-gyp is installed at: path/to/python. Installed version is: 2.7.15'
+        optional: true,
+        message: 'Python required by node-gyp (used by heapdump) is installed at: path/to/python. Installed version is: 2.7.15'
       });
       mocks.verify();
     });
@@ -174,8 +174,8 @@ describe('general', function () {
       mocks.utils.expects('resolveExecutablePath').once().returns(false);
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        optional: false,
-        message: 'Python required by node-gyp not found in PATH: /a/b/c/d;/e/f/g/h'
+        optional: true,
+        message: 'Python required by node-gyp (used by heapdump) not found in PATH: /a/b/c/d;/e/f/g/h'
       });
       mocks.verify();
     });
@@ -184,8 +184,8 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns({stdout: '', stderr: 'Python 3.7'});
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        optional: false,
-        message: 'Python version required by node-gyp should be 2.x'
+        optional: true,
+        message: 'Python version required by node-gyp (used by heapdump) should be 2.x'
       });
       mocks.verify();
     });
@@ -195,8 +195,8 @@ describe('general', function () {
       mocks.tp.expects('exec').once().returns({stdout: '', stderr: 'Python no version'});
       (await check.diagnose()).should.deep.equal({
         ok: false,
-        optional: false,
-        message: "Unable to identify Python version correctly (version = 'null') at path/to/python. Please make sure your Python environment in PATH: /a/b/c/d;/e/f/g/h. node-gyp requires Python 2.x"
+        optional: true,
+        message: "Unable to identify Python version correctly (version = 'null') at path/to/python. Please make sure your Python environment in PATH: /a/b/c/d;/e/f/g/h. node-gyp (used by heapdump) requires Python 2.x"
       });
       mocks.verify();
     });
