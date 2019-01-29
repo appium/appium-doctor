@@ -196,7 +196,7 @@ describe('general', function () {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: false,
-        message: "Unable to identify Python version correctly(version = 'null') at path/to/python. Please make sure your environment. node-gyp requires Python 2.x"
+        message: "Unable to identify Python version correctly (version = 'null') at path/to/python. Please make sure your Python environment in PATH: /a/b/c/d;/e/f/g/h. node-gyp requires Python 2.x"
       });
       mocks.verify();
     });
