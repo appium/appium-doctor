@@ -89,6 +89,17 @@ describe('general', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
+      mocks.tp.expects('exec').once().returns({stdout: `
+        {
+          "dependencies": {
+            "opencv4nodejs": {
+              "version": "4.13.0",
+              "from": "opencv4nodejs",
+              "resolved": "https://registry.npmjs.org/opencv4nodejs/-/opencv4nodejs-4.14.1.tgz"
+            }
+          }
+        }
+      `, stderr: ''});
       mocks.tp.expects('exec').once().returns({stdout: `/path/to/node/node/v11.4.0/lib\n└── opencv4nodejs@4.13.0`, stderr: ''});
       (await check.diagnose()).should.deep.equal({
         ok: true,
@@ -97,17 +108,8 @@ describe('general', function () {
       });
       mocks.verify();
     });
-    it('diagnose - success, but not sure if the library exist, no opencv4nodejs@4.13.0', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: `/path/to/node/node/v11.4.0/opencv4nodejs`, stderr: ''});
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'opencv4nodejs is probably installed at: /path/to/node/node/v11.4.0/opencv4nodejs.'
-      });
-      mocks.verify();
-    });
     it('diagnose - failure', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: 'not found', stderr: ''});
+      mocks.tp.expects('exec').once().returns({stdout: '{}', stderr: ''});
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
