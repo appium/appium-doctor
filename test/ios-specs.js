@@ -261,6 +261,16 @@ describe('ios', function () {
       });
       mocks.verify();
     });
+    it('diagnose - success - but error happens', async function () {
+      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
+      mocks.tp.expects('exec').once().throws(new Error());
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: false,
+        message: 'Carthage was found at: /usr/local/bin/carthage'
+      });
+      mocks.verify();
+    });
     it('diagnose - failure', async function () {
       mocks.CarthageDetector.expects('detect').once().returns(B.resolve(null));
       (await check.diagnose()).should.deep.equal({
