@@ -2,7 +2,7 @@
 
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
          AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
-         OptionalFbsimctlCommandCheck, OptionalIdevicelocationCommandCheck,
+         OptionalIdbCommandCheck, OptionalIdevicelocationCommandCheck,
          OptionalIOSDeployCommandCheck, OptionalIOSWebkitDebugProxyCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
@@ -262,42 +262,42 @@ describe('ios', function () {
     });
   }));
 
-  describe('OptionalFbsimctlCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalFbsimctlCommandCheck();
+  describe('OptionalIdbCommandCheck', withMocks({tp, utils}, (mocks) => {
+    let check = new OptionalIdbCommandCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns('path/to/fbsimctl');
-      mocks.tp.expects('exec').once().returns({stdout: 'vxx.xx.xx', stderr: ''});
+      mocks.tp.expects('exec').once().returns({stdout: 'idb-companion 1.0.', stderr: ''});
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'fbsimctl is installed at: path/to/fbsimctl. Installed versions are: vxx.xx.xx'
+        message: 'idb are installed'
       });
       mocks.verify();
     });
-    it('diagnose - success - custom install', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/fbsimctl');
-      mocks.tp.expects('exec').once().throws(`Command 'brew list --versions fbsimctl' exited with code 1`);
+    it('diagnose - failure because of no idb_companion', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
+      mocks.tp.expects('exec').once().throws();
       (await check.diagnose()).should.deep.equal({
-        ok: true,
+        ok: false,
         optional: true,
-        message: 'fbsimctl is installed at: path/to/fbsimctl. It is prbably installed as custom install.'
+        message: 'idb is not installed'
       });
       mocks.verify();
     });
-    it('diagnose - failure', async function () {
+    it('diagnose - failure because of no idb', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns(false);
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'fbsimctl cannot be found'
+        message: 'idb is not installed'
       });
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Why fbsimctl is needed and how to install it: http://appium.io/docs/en/drivers/ios-xcuitest/');
+      (await check.fix()).should.equal('Why idb is needed and how to install it: https://github.com/appium/appium-idb');
     });
   }));
 
