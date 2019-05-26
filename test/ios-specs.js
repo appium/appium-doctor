@@ -277,13 +277,23 @@ describe('ios', function () {
       });
       mocks.verify();
     });
+    it('diagnose - failure because of no idb_companion and idb', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: true,
+        message: 'idb and idb_companion are not installed'
+      });
+      mocks.verify();
+    });
     it('diagnose - failure because of no idb_companion', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
       mocks.utils.expects('resolveExecutablePath').once().returns(false);
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'idb and/or idb_companion are not installed'
+        message: 'idb_companion is not installed'
       });
       mocks.verify();
     });
@@ -293,7 +303,7 @@ describe('ios', function () {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'idb and/or idb_companion are not installed'
+        message: 'idb is not installed'
       });
       mocks.verify();
     });
