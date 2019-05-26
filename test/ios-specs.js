@@ -268,31 +268,32 @@ describe('ios', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/fbsimctl');
-      mocks.tp.expects('exec').once().returns({stdout: 'idb-companion 1.0.', stderr: ''});
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb_cpmpanion');
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'idb are installed'
+        message: 'idb and idb_companion are installed'
       });
       mocks.verify();
     });
     it('diagnose - failure because of no idb_companion', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
-      mocks.tp.expects('exec').once().throws();
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'idb is not installed'
+        message: 'idb and/or idb_companion are not installed'
       });
       mocks.verify();
     });
     it('diagnose - failure because of no idb', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb_cpmpanion');
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'idb is not installed'
+        message: 'idb and/or idb_companion are not installed'
       });
       mocks.verify();
     });
