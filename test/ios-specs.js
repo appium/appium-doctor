@@ -424,12 +424,23 @@ describe('ios', function () {
     });
     it('diagnose - success', async function () {
       mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ifuse');
-      mocks.tp.expects('exec').once().returns({stdout: ``, stderr: 'ifuse 1.1.3\n'});
+      mocks.tp.expects('exec').once().returns({stdout: '', stderr: 'ifuse 1.1.3\n'});
 
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
         message: 'ifuse is installed at: path/to/ifuse. Installed version is: 1.1.3'
+      });
+      mocks.verify();
+    });
+    it('diagnose - success - version is null', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ifuse');
+      mocks.tp.expects('exec').once().returns({stdout: '', stderr: ''});
+
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: true,
+        message: 'ifuse is installed at: path/to/ifuse.'
       });
       mocks.verify();
     });
