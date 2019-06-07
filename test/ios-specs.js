@@ -488,7 +488,7 @@ describe('ios', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('ifuse is used to manage files/folders against a real device. Please run `brew cask install osxfuse && brew install ifuse --HEAD` or read https://github.com/libimobiledevice/ifuse to install it');
+      (await check.fix()).should.equal('ifuse is used to manage files/folders against a real device. Please read https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/ios/ios-xctest-file-movement.md to install it');
     });
   }));
 });
