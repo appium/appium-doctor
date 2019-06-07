@@ -2,7 +2,7 @@
 
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
          AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
-         OptionalFbsimctlCommandCheck, OptionalIdevicelocationCommandCheck,
+         OptionalIdbCommandCheck, OptionalIdevicelocationCommandCheck,
          OptionalIOSDeployCommandCheck, OptionalIOSWebkitDebugProxyCommandCheck, OptionalIfuseCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
@@ -234,13 +234,36 @@ describe('ios', function () {
       mocks.verify();
     });
   }));
-  describe('CarthageCheck', withMocks({CarthageDetector}, (mocks) => {
+  describe('CarthageCheck', withMocks({CarthageDetector, tp}, (mocks) => {
     let check = new CarthageCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
       mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
+      mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: 'Please update to the latest Carthage version: 0.33.0. You currently are on 0.32.0\n0.32.0\n', stderr: ''}));
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: false,
+        message: 'Carthage was found at: /usr/local/bin/carthage. Installed version is: 0.32.0'
+      });
+      mocks.verify();
+    });
+    it('diagnose - success - one line carthage version', async function () {
+      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
+      mocks.tp.expects('exec').once().returns(
+        B.resolve({stdout: '0.32.0\n', stderr: ''}));
+      (await check.diagnose()).should.deep.equal({
+        ok: true,
+        optional: false,
+        message: 'Carthage was found at: /usr/local/bin/carthage. Installed version is: 0.32.0'
+      });
+      mocks.verify();
+    });
+    it('diagnose - success - but error happens', async function () {
+      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
+      mocks.tp.expects('exec').once().throws(new Error());
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: false,
@@ -262,42 +285,53 @@ describe('ios', function () {
     });
   }));
 
-  describe('OptionalFbsimctlCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalFbsimctlCommandCheck();
+  describe('OptionalIdbCommandCheck', withMocks({tp, utils}, (mocks) => {
+    let check = new OptionalIdbCommandCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/fbsimctl');
-      mocks.tp.expects('exec').once().returns({stdout: 'vxx.xx.xx', stderr: ''});
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb_cpmpanion');
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'fbsimctl is installed at: path/to/fbsimctl. Installed versions are: vxx.xx.xx'
+        message: 'idb and idb_companion are installed'
       });
       mocks.verify();
     });
-    it('diagnose - success - custom install', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/fbsimctl');
-      mocks.tp.expects('exec').once().throws(`Command 'brew list --versions fbsimctl' exited with code 1`);
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'fbsimctl is installed at: path/to/fbsimctl. It is prbably installed as custom install.'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
+    it('diagnose - failure because of no idb_companion and idb', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
       mocks.utils.expects('resolveExecutablePath').once().returns(false);
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'fbsimctl cannot be found'
+        message: 'idb and idb_companion are not installed'
+      });
+      mocks.verify();
+    });
+    it('diagnose - failure because of no idb_companion', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb');
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: true,
+        message: 'idb_companion is not installed'
+      });
+      mocks.verify();
+    });
+    it('diagnose - failure because of no idb', async function () {
+      mocks.utils.expects('resolveExecutablePath').once().returns(false);
+      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idb_cpmpanion');
+      (await check.diagnose()).should.deep.equal({
+        ok: false,
+        optional: true,
+        message: 'idb is not installed'
       });
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Why fbsimctl is needed and how to install it: http://appium.io/docs/en/drivers/ios-xcuitest/');
+      (await check.fix()).should.equal('Why idb is needed and how to install it: https://github.com/appium/appium-idb');
     });
   }));
 
