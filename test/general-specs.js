@@ -9,7 +9,7 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { withMocks } from 'appium-test-support';
 import B from 'bluebird';
-
+import 'colors';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -39,7 +39,7 @@ describe('general', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Manually setup Node.js.');
+      (await check.fix()).should.equal(`Manually setup ${'Node.js'.bold}.`);
     });
   }));
 
@@ -79,7 +79,7 @@ describe('general', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('Manually upgrade Node.js.');
+      (await check.fix()).should.equal(`Manually upgrade ${'Node.js'.bold}.`);
     });
   }));
 
@@ -119,7 +119,7 @@ describe('general', function () {
     });
     it('fix', async function () {
       (await check.fix()).should.
-        equal('Why opencv4nodejs is needed and how to install it: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
+        equal(`Why ${'opencv4nodejs'.bold} is needed and how to install it: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md`);
     });
   }));
 
@@ -152,7 +152,7 @@ describe('general', function () {
       mocks.verify();
     });
     it('fix', async function () {
-      (await check.fix()).should.equal('ffmpeg is needed to record screen features. Please read https://www.ffmpeg.org/ to install it');
+      (await check.fix()).should.equal(`${'ffmpeg'.bold} is needed to record screen features. Please read https://www.ffmpeg.org/ to install it`);
     });
   }));
 
@@ -192,7 +192,7 @@ describe('general', function () {
     });
     it('fix', async function () {
       (await check.fix()).should.
-        equal('mjpeg-consumer module is required to use MJPEG-over-HTTP features. Please install it with `npm i -g mjpeg-consumer`.');
+        equal(`${'mjpeg-consumer'.bold} module is required to use MJPEG-over-HTTP features. Please install it with 'npm i -g mjpeg-consumer'.`);
     });
   }));
 });
