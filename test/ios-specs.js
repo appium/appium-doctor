@@ -3,7 +3,7 @@
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
          AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
          OptionalIdbCommandCheck, OptionalIdevicelocationCommandCheck,
-         OptionalIOSDeployCommandCheck, OptionalIOSWebkitDebugProxyCommandCheck, OptionalIfuseCommandCheck } from '../lib/ios';
+         OptionalIOSWebkitDebugProxyCommandCheck, OptionalIfuseCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
 import * as tp from 'teen_process';
@@ -389,35 +389,6 @@ describe('ios', function () {
     });
     it('fix', async function () {
       removeColors(await check.fix()).should.equal('idevicelocation is used to set geolocation for real device. Please read https://github.com/JonGabilondoAngulo/idevicelocation to install it');
-    });
-  }));
-
-  describe('OptionalIOSDeployCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalIOSDeployCommandCheck();
-    it('autofix', function () {
-      check.autofix.should.not.be.ok;
-    });
-    it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ios-deploy');
-      mocks.tp.expects('exec').once().returns({stdout: '1.9.4', stderr: ''});
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'ios-deploy is installed at: path/to/ios-deploy. Installed version is: 1.9.4'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns(false);
-      (await check.diagnose()).should.deep.equal({
-        ok: false,
-        optional: true,
-        message: 'ios-deploy cannot be found'
-      });
-      mocks.verify();
-    });
-    it('fix', async function () {
-      removeColors(await check.fix()).should.equal('ios-deploy is used to install iOS applications to real device. Please read http://appium.io/docs/en/drivers/ios-xcuitest-real-devices/ to install it');
     });
   }));
 
