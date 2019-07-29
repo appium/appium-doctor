@@ -3,7 +3,7 @@
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
          AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
          OptionalIdbCommandCheck, OptionalIdevicelocationCommandCheck,
-         OptionalIOSWebkitDebugProxyCommandCheck, OptionalIfuseCommandCheck } from '../lib/ios';
+         OptionalIOSWebkitDebugProxyCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
 import * as tp from 'teen_process';
@@ -419,47 +419,6 @@ describe('ios', function () {
     });
     it('fix', async function () {
       removeColors(await check.fix()).should.equal('ios_webkit_debug_proxy is used to proxy requests from Appium to MobileSafari running on real device. Please read https://github.com/google/ios-webkit-debug-proxy to install it');
-    });
-  }));
-
-  describe('OptionalIfuseCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalIfuseCommandCheck();
-    it('autofix', function () {
-      check.autofix.should.not.be.ok;
-    });
-    it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ifuse');
-      mocks.tp.expects('exec').once().returns({stdout: '', stderr: 'ifuse 1.1.3\n'});
-
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'ifuse is installed at: path/to/ifuse. Installed version is: 1.1.3'
-      });
-      mocks.verify();
-    });
-    it('diagnose - success - version is null', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ifuse');
-      mocks.tp.expects('exec').once().returns({stdout: '', stderr: ''});
-
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'ifuse is installed at: path/to/ifuse.'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns(false);
-      (await check.diagnose()).should.deep.equal({
-        ok: false,
-        optional: true,
-        message: 'ifuse cannot be found'
-      });
-      mocks.verify();
-    });
-    it('fix', async function () {
-      removeColors(await check.fix()).should.equal('ifuse is used to manage files/folders against a real device. Please read https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/ios/ios-xctest-file-movement.md to install it');
     });
   }));
 });
