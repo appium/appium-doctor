@@ -2,8 +2,7 @@
 
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
          AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
-         OptionalIdbCommandCheck, OptionalIdevicelocationCommandCheck,
-         OptionalIOSWebkitDebugProxyCommandCheck } from '../lib/ios';
+         OptionalIdbCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
 import * as tp from 'teen_process';
@@ -361,64 +360,6 @@ describe('ios', function () {
     });
     it('fix', async function () {
       removeColors(await check.fix()).should.equal('Why applesimutils is needed and how to install it: http://appium.io/docs/en/drivers/ios-xcuitest/');
-    });
-  }));
-
-  describe('OptionalIdevicelocationCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalIdevicelocationCommandCheck();
-    it('autofix', function () {
-      check.autofix.should.not.be.ok;
-    });
-    it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/idevicelocation');
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'idevicelocation is installed at: path/to/idevicelocation'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns(false);
-      (await check.diagnose()).should.deep.equal({
-        ok: false,
-        optional: true,
-        message: 'idevicelocation cannot be found'
-      });
-      mocks.verify();
-    });
-    it('fix', async function () {
-      removeColors(await check.fix()).should.equal('idevicelocation is used to set geolocation for real device. Please read https://github.com/JonGabilondoAngulo/idevicelocation to install it');
-    });
-  }));
-
-  describe('OptionalIOSWebkitDebugProxyCommandCheck', withMocks({tp, utils}, (mocks) => {
-    let check = new OptionalIOSWebkitDebugProxyCommandCheck();
-    it('autofix', function () {
-      check.autofix.should.not.be.ok;
-    });
-    it('diagnose - success', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns('path/to/ios_webkit_debug_proxy');
-      mocks.tp.expects('exec').once().returns({stdout: `ios_webkit_debug_proxy 1.8.3\ninfo AppiumDoctor Built with libimobiledevice v1.2.0, libplist v2.0.0`, stderr: ''});
-
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: true,
-        message: 'ios_webkit_debug_proxy is installed at: path/to/ios_webkit_debug_proxy. Installed version is: 1.8.3, info AppiumDoctor Built with libimobiledevice v1.2.0, libplist v2.0.0'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
-      mocks.utils.expects('resolveExecutablePath').once().returns(false);
-      (await check.diagnose()).should.deep.equal({
-        ok: false,
-        optional: true,
-        message: 'ios_webkit_debug_proxy cannot be found'
-      });
-      mocks.verify();
-    });
-    it('fix', async function () {
-      removeColors(await check.fix()).should.equal('ios_webkit_debug_proxy is used to proxy requests from Appium to MobileSafari running on real device. Please read https://github.com/google/ios-webkit-debug-proxy to install it');
     });
   }));
 });
