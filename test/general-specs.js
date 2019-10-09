@@ -64,7 +64,7 @@ describe('general', function () {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: false,
-        message: 'Node version should be at least 10!'
+        message: 'Node version should be at least 10.0.0!'
       });
       mocks.verify();
     });
