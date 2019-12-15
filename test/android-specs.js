@@ -146,7 +146,7 @@ describe('android', function () {
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
-        message: 'gst-launch-1.0 and gst-inspect-1.0 cannot be found'
+        message: 'gst-launch-1.0 and/or gst-inspect-1.0 cannot be found'
       });
       mocks.verify();
     });
