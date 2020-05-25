@@ -55,7 +55,7 @@ describe('android', function () {
   }));
   describe('AndroidToolCheck', withMocks({adb}, (mocks) => {
     stubEnv();
-    let check = new AndroidToolCheck();
+    const check = new AndroidToolCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
