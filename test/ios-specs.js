@@ -1,14 +1,13 @@
 // transpile:mocha
 
 import { fixes, XcodeCheck, XcodeCmdLineToolsCheck, DevToolsSecurityCheck,
-         AuthorizationDbCheck, CarthageCheck, OptionalApplesimutilsCommandCheck,
+         AuthorizationDbCheck, OptionalApplesimutilsCommandCheck,
          OptionalIdbCommandCheck, OptionalIOSDeployCommandCheck,
          OptionalLyftCommandCheck } from '../lib/ios';
 import { fs, system } from 'appium-support';
 import * as utils from '../lib/utils';
 import * as tp from 'teen_process';
 import * as prompter from '../lib/prompt';
-import CarthageDetector from '../lib/carthage-detector';
 import FixSkippedError from '../lib/doctor';
 import log from '../lib/logger';
 import chai from 'chai';
@@ -232,56 +231,6 @@ describe('ios', function () {
       mocks.fixes.expects('authorizeIosFix').once();
       await check.fix();
       mocks.verify();
-    });
-  }));
-  describe('CarthageCheck', withMocks({CarthageDetector, tp}, (mocks) => {
-    let check = new CarthageCheck();
-    it('autofix', function () {
-      check.autofix.should.not.be.ok;
-    });
-    it('diagnose - success', async function () {
-      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
-      mocks.tp.expects('exec').once().returns(
-        B.resolve({stdout: 'Please update to the latest Carthage version: 0.33.0. You currently are on 0.32.0\n0.32.0\n', stderr: ''}));
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: false,
-        message: 'Carthage was found at: /usr/local/bin/carthage. Installed version is: 0.32.0'
-      });
-      mocks.verify();
-    });
-    it('diagnose - success - one line carthage version', async function () {
-      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
-      mocks.tp.expects('exec').once().returns(
-        B.resolve({stdout: '0.32.0\n', stderr: ''}));
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: false,
-        message: 'Carthage was found at: /usr/local/bin/carthage. Installed version is: 0.32.0'
-      });
-      mocks.verify();
-    });
-    it('diagnose - success - but error happens', async function () {
-      mocks.CarthageDetector.expects('detect').once().returns(B.resolve('/usr/local/bin/carthage'));
-      mocks.tp.expects('exec').once().throws(new Error());
-      (await check.diagnose()).should.deep.equal({
-        ok: true,
-        optional: false,
-        message: 'Carthage was found at: /usr/local/bin/carthage'
-      });
-      mocks.verify();
-    });
-    it('diagnose - failure', async function () {
-      mocks.CarthageDetector.expects('detect').once().returns(B.resolve(null));
-      (await check.diagnose()).should.deep.equal({
-        ok: false,
-        optional: false,
-        message: 'Carthage was NOT found!'
-      });
-      mocks.verify();
-    });
-    it('fix', async function () {
-      removeColors(await check.fix()).should.equal('Please install Carthage. Visit https://github.com/Carthage/Carthage#installing-carthage for more information.');
     });
   }));
 
