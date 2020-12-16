@@ -61,6 +61,11 @@ describe('NodeDetector', withSandbox({mocks: {fs, tp, system}}, (S) => {
     (await NodeDetector.retrieveUsingSystemCall()).should.equal('/a/b/c/d/node');
     S.verify();
   });
+  it('retrieveUsingSystemCall - failure - path not found ', async function () {
+    S.mocks.fs.expects('which').once().throws(Error('not found: carthage'));
+    expect(await NodeDetector.retrieveUsingSystemCall()).to.be.a('null');
+    S.verify();
+  });
   it('retrieveUsingSystemCall - failure - path not exist', async function () {
     S.mocks.fs.expects('which').once().returns(
       B.resolve('/a/b/c/d'));
