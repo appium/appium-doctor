@@ -1,4 +1,3 @@
-/* eslint global-require: off */
 module.exports = (api) => {
   api.cache(true);
   return {
