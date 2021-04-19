@@ -91,28 +91,15 @@ describe('general', function () {
     });
     it('diagnose - success', async function () {
       mocks.node.expects('requirePackage').once().returns();
-      mocks.tp.expects('exec').returns({stdout: `
-        {
-          "dependencies": {
-            "opencv4nodejs": {
-              "version": "4.13.0",
-              "from": "opencv4nodejs",
-              "resolved": "https://registry.npmjs.org/opencv4nodejs/-/opencv4nodejs-4.14.1.tgz"
-            }
-          },
-          "path": "/path/to/node/node/v11.4.0/lib"
-        }
-      `, stderr: ''});
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'opencv4nodejs is installed at: /path/to/node/node/v11.4.0/lib. Installed version is: 4.13.0'
+        message: 'opencv4nodejs is installed.'
       });
       mocks.verify();
     });
     it('diagnose - failure', async function () {
-      mocks.node.expects('requirePackage').once().returns();
-      mocks.tp.expects('exec').returns({stdout: '{}', stderr: ''});
+      mocks.node.expects('requirePackage').once().throws();
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
