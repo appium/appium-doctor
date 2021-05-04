@@ -8,6 +8,7 @@ import NodeDetector from '../lib/node-detector';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { withMocks } from 'appium-test-support';
+import { node } from 'appium-support';
 import B from 'bluebird';
 import { removeColors } from './helper';
 
@@ -83,33 +84,22 @@ describe('general', function () {
     });
   }));
 
-  describe('OptionalOpencv4nodejsCommandCheck', withMocks({tp}, (mocks) => {
+  describe('OptionalOpencv4nodejsCommandCheck', withMocks({node, tp}, (mocks) => {
     let check = new OptionalOpencv4nodejsCommandCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: `
-        {
-          "dependencies": {
-            "opencv4nodejs": {
-              "version": "4.13.0",
-              "from": "opencv4nodejs",
-              "resolved": "https://registry.npmjs.org/opencv4nodejs/-/opencv4nodejs-4.14.1.tgz"
-            }
-          },
-          "path": "/path/to/node/node/v11.4.0/lib"
-        }
-      `, stderr: ''});
+      mocks.node.expects('requirePackage').once().returns();
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'opencv4nodejs is installed at: /path/to/node/node/v11.4.0/lib. Installed version is: 4.13.0'
+        message: 'opencv4nodejs is installed.'
       });
       mocks.verify();
     });
     it('diagnose - failure', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: '{}', stderr: ''});
+      mocks.node.expects('requirePackage').once().throws();
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
@@ -156,33 +146,22 @@ describe('general', function () {
     });
   }));
 
-  describe('OptionalMjpegConsumerCommandCheck', withMocks({tp}, (mocks) => {
+  describe('OptionalMjpegConsumerCommandCheck', withMocks({node}, (mocks) => {
     let check = new OptionalMjpegConsumerCommandCheck();
     it('autofix', function () {
       check.autofix.should.not.be.ok;
     });
     it('diagnose - success', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: `
-        {
-          "dependencies": {
-            "mjpeg-consumer": {
-              "version": "1.1.0",
-              "from": "mjpeg-consumer",
-              "resolved": "https://registry.npmjs.org/mjpeg-consumer/-/mjpeg-consumer-1.1.0.tgz"
-            }
-          },
-          "path": "/path/to/node/node/v11.4.0/lib"
-        }
-      `, stderr: ''});
+      mocks.node.expects('requirePackage').once().returns();
       (await check.diagnose()).should.deep.equal({
         ok: true,
         optional: true,
-        message: 'mjpeg-consumer is installed at: /path/to/node/node/v11.4.0/lib. Installed version is: 1.1.0'
+        message: 'mjpeg-consumer is installed.'
       });
       mocks.verify();
     });
     it('diagnose - failure', async function () {
-      mocks.tp.expects('exec').once().returns({stdout: '{}', stderr: ''});
+      mocks.node.expects('requirePackage').once().throws();
       (await check.diagnose()).should.deep.equal({
         ok: false,
         optional: true,
