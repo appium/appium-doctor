@@ -36,11 +36,11 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@dabh/colors": "^1.4.0",
     "appium-support": "^2.5.0",
     "appium-adb": "^8.4.0",
     "authorize-ios": "^1.0.3",
     "bluebird": "^3.5.1",
-    "colors": "^1.1.2",
     "inquirer": "^7.0.0",
     "lodash": "^4.17.10",
     "source-map-support": "^0.5.6",
