@@ -119,7 +119,7 @@ describe('general', function () {
     });
     it('fix', async function () {
       removeColors(await check.fix()).should.
-        equal('Why opencv4nodejs is needed and how to install it: https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/image-comparison.md');
+        equal('Why opencv4nodejs is needed and how to install it: http://appium.io/docs/en/writing-running-appium/image-comparison/');
     });
   }));
 
