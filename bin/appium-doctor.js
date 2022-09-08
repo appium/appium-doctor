@@ -6,7 +6,6 @@ import { configureBinaryLog } from '../lib/utils';
 import { configure as configurePrompt } from '../lib/prompt';
 import { system } from 'appium-support';
 
-
 yargs
   .strict()
   .usage('Usage: $0 [options, defaults: --ios --android]')
