@@ -1,3 +1,7 @@
+**Deprecated**
+
+Please refer to https://github.com/appium/appium/tree/master/packages/doctor
+
 appium-doctor
 ===================
 Attempts to diagnose and fix common Node, iOS and Android configuration issues before starting Appium.
