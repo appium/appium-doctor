@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@dabh/colors": "^1.4.0",
+    "@colors/colors": "^1.5.0",
     "appium-support": "^2.5.0",
     "appium-adb": "^8.4.0",
     "authorize-ios": "^1.0.3",
